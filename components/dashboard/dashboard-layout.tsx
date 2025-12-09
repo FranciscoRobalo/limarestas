@@ -3,7 +3,19 @@
 import { useState, type ReactNode } from "react"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
-import { LayoutDashboard, FileText, MessageSquare, LogOut, Menu, X, Home } from "lucide-react"
+import {
+  LayoutDashboard,
+  FileText,
+  MessageSquare,
+  LogOut,
+  Menu,
+  X,
+  Home,
+  PlusCircle,
+  ClipboardCheck,
+  Calendar,
+  Building2,
+} from "lucide-react"
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -11,6 +23,10 @@ interface DashboardLayoutProps {
 
 const navigation = [
   { name: "Painel", href: "/dashboard", icon: LayoutDashboard, id: "dashboard" },
+  { name: "Nova Obra", href: "/dashboard?tab=nova-obra", icon: PlusCircle, id: "nova-obra" },
+  { name: "Pré-Validação", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao" },
+  { name: "Agendar Visita", href: "/dashboard?tab=agendar", icon: Calendar, id: "agendar" },
+  { name: "Obras Disponíveis", href: "/dashboard?tab=obras", icon: Building2, id: "obras" },
   { name: "Documentos", href: "/dashboard?tab=documents", icon: FileText, id: "documents" },
   { name: "Mensagens", href: "/dashboard?tab=chat", icon: MessageSquare, id: "chat" },
 ]
