@@ -1,11 +1,11 @@
 "use client"
 
-import type React from "react"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { ClipboardCheck, Clock, CheckCircle2, XCircle, AlertCircle, Eye, MapPin, Calendar, Euro } from "lucide-react"
+import { useObras } from "@/hooks/use-obras"
+import type React from "react"
 
 type StatusType = "pendente" | "em-analise" | "aprovado" | "rejeitado" | "informacao-adicional"
 
@@ -14,6 +14,7 @@ interface Obra {
   nome: string
   tipo: string
   localizacao: string
+  distrito?: string
   dataSubmissao: string
   status: StatusType
   observacoes?: string
@@ -53,60 +54,9 @@ const statusConfig: Record<StatusType, { label: string; color: string; icon: Rea
   },
 }
 
-const mockObras: Obra[] = [
-  {
-    id: "OBR-2024-001",
-    nome: "Remodelação Apartamento T3 - Cascais",
-    tipo: "Remodelação",
-    localizacao: "Cascais, Lisboa",
-    dataSubmissao: "2024-01-15",
-    status: "aprovado",
-    orcamento: "50.000€ - 100.000€",
-    observacoes: "Projeto aprovado. Aguarda agendamento de visita técnica.",
-  },
-  {
-    id: "OBR-2024-002",
-    nome: "Construção Moradia V4 - Sintra",
-    tipo: "Construção Nova",
-    localizacao: "Sintra, Lisboa",
-    dataSubmissao: "2024-01-18",
-    status: "em-analise",
-    orcamento: "Mais de 250.000€",
-    observacoes: "Em análise pela equipa técnica. Prazo estimado: 5 dias úteis.",
-  },
-  {
-    id: "OBR-2024-003",
-    nome: "Reabilitação Prédio Centro Histórico",
-    tipo: "Reabilitação",
-    localizacao: "Porto",
-    dataSubmissao: "2024-01-20",
-    status: "informacao-adicional",
-    orcamento: "100.000€ - 250.000€",
-    observacoes: "Necessário fornecer plantas do edifício e licença camarária.",
-  },
-  {
-    id: "OBR-2024-004",
-    nome: "Ampliação Escritório - Oeiras",
-    tipo: "Ampliação",
-    localizacao: "Oeiras, Lisboa",
-    dataSubmissao: "2024-01-22",
-    status: "pendente",
-    orcamento: "25.000€ - 50.000€",
-  },
-  {
-    id: "OBR-2024-005",
-    nome: "Manutenção Fachada Industrial",
-    tipo: "Manutenção",
-    localizacao: "Setúbal",
-    dataSubmissao: "2024-01-10",
-    status: "rejeitado",
-    orcamento: "10.000€ - 25.000€",
-    observacoes:
-      "Projeto fora do âmbito de serviços. Recomendado contactar empresa especializada em fachadas industriais.",
-  },
-]
-
 export function ValidacaoSection() {
+  const { obras, updateObra } = useObras()
+
   return (
     <div className="space-y-8">
       <div>
@@ -140,83 +90,94 @@ export function ValidacaoSection() {
       </Card>
 
       {/* Obras List */}
-      <div className="space-y-4">
-        {mockObras.map((obra) => {
-          const status = statusConfig[obra.status]
-          const StatusIcon = status.icon
+      {obras.length === 0 ? (
+        <Card className="p-12 text-center">
+          <ClipboardCheck className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">Nenhuma obra submetida ainda.</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Submeta uma nova obra na tab &quot;Nova Obra&quot; para começar.
+          </p>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {obras.map((obra) => {
+            const status = statusConfig[obra.status]
+            const StatusIcon = status.icon
 
-          return (
-            <Card
-              key={obra.id}
-              className={`border-l-4 ${
-                obra.status === "aprovado"
-                  ? "border-l-green-500"
-                  : obra.status === "em-analise"
-                    ? "border-l-blue-500"
-                    : obra.status === "pendente"
-                      ? "border-l-yellow-500"
-                      : obra.status === "rejeitado"
-                        ? "border-l-red-500"
-                        : "border-l-orange-500"
-              }`}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <CardTitle className="text-lg">{obra.nome}</CardTitle>
-                    <CardDescription className="mt-1">Referência: {obra.id}</CardDescription>
+            return (
+              <Card
+                key={obra.id}
+                className={`border-l-4 ${
+                  obra.status === "aprovado"
+                    ? "border-l-green-500"
+                    : obra.status === "em-analise"
+                      ? "border-l-blue-500"
+                      : obra.status === "pendente"
+                        ? "border-l-yellow-500"
+                        : obra.status === "rejeitado"
+                          ? "border-l-red-500"
+                          : "border-l-orange-500"
+                }`}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <CardTitle className="text-lg">{obra.nome}</CardTitle>
+                      <CardDescription className="mt-1">Referência: {obra.id}</CardDescription>
+                    </div>
+                    <Badge className={`${status.bgColor} ${status.color} border`}>
+                      <StatusIcon className="w-3 h-3 mr-1" />
+                      {status.label}
+                    </Badge>
                   </div>
-                  <Badge className={`${status.bgColor} ${status.color} border`}>
-                    <StatusIcon className="w-3 h-3 mr-1" />
-                    {status.label}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4" />
-                    {obra.localizacao}
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4" />
+                      {obra.localizacao}
+                      {obra.distrito ? `, ${obra.distrito}` : ""}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4" />
+                      {new Date(obra.dataSubmissao).toLocaleDateString("pt-PT")}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Euro className="w-4 h-4" />
+                      {obra.orcamento}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Tipo: {obra.tipo}</div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    {new Date(obra.dataSubmissao).toLocaleDateString("pt-PT")}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Euro className="w-4 h-4" />
-                    {obra.orcamento}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Tipo: {obra.tipo}</div>
-                </div>
 
-                {obra.observacoes && (
-                  <div className={`p-3 rounded-lg ${status.bgColor} border`}>
-                    <p className="text-sm">
-                      <span className="font-medium">Observações:</span> {obra.observacoes}
-                    </p>
-                  </div>
-                )}
-
-                <div className="flex gap-2 mt-4">
-                  <Button variant="outline" size="sm">
-                    Ver Detalhes
-                  </Button>
-                  {obra.status === "informacao-adicional" && (
-                    <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
-                      Enviar Documentos
-                    </Button>
+                  {obra.observacoes && (
+                    <div className={`p-3 rounded-lg ${status.bgColor} border mb-4`}>
+                      <p className="text-sm">
+                        <span className="font-medium">Observações:</span> {obra.observacoes}
+                      </p>
+                    </div>
                   )}
-                  {obra.status === "aprovado" && (
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                      Agendar Visita
+
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      Ver Detalhes
                     </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+                    {obra.status === "informacao-adicional" && (
+                      <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
+                        Enviar Documentos
+                      </Button>
+                    )}
+                    {obra.status === "aprovado" && (
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                        Agendar Visita
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

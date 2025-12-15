@@ -4,9 +4,26 @@ import Link from "next/link"
 import { MessageSquare, Upload, PlusCircle, ClipboardCheck, Calendar, Building2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
+import { useObras } from "@/hooks/use-obras"
+import { useVisitas } from "@/hooks/use-visitas"
+import { useMensagens } from "@/hooks/use-mensagens"
 
 export function DashboardOverview() {
   const { user } = useAuth()
+  const { obras } = useObras()
+  const { visitas } = useVisitas()
+  const { getNaoLidas } = useMensagens()
+
+  const obrasAtivas = obras.filter((o) => o.status === "aprovado" || o.status === "em-analise").length
+  const obrasPendentes = obras.filter((o) => o.status === "pendente").length
+  const visitasProximas = visitas.filter((v) => {
+    const visitaDate = new Date(v.data)
+    const hoje = new Date()
+    const umaSemana = new Date()
+    umaSemana.setDate(hoje.getDate() + 7)
+    return visitaDate >= hoje && visitaDate <= umaSemana && v.status !== "cancelada"
+  }).length
+  const mensagensNaoLidas = getNaoLidas().length
 
   return (
     <div className="space-y-8">
@@ -26,7 +43,7 @@ export function DashboardOverview() {
             <Building2 className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">3</div>
+            <div className="text-2xl font-bold text-foreground">{obrasAtivas}</div>
             <p className="text-xs text-muted-foreground">em andamento</p>
           </CardContent>
         </Card>
@@ -37,7 +54,7 @@ export function DashboardOverview() {
             <ClipboardCheck className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">2</div>
+            <div className="text-2xl font-bold text-yellow-600">{obrasPendentes}</div>
             <p className="text-xs text-muted-foreground">aguardam validação</p>
           </CardContent>
         </Card>
@@ -48,8 +65,8 @@ export function DashboardOverview() {
             <Calendar className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">1</div>
-            <p className="text-xs text-muted-foreground">agendada esta semana</p>
+            <div className="text-2xl font-bold text-foreground">{visitasProximas}</div>
+            <p className="text-xs text-muted-foreground">agendada{visitasProximas !== 1 ? "s" : ""} esta semana</p>
           </CardContent>
         </Card>
 
@@ -59,8 +76,8 @@ export function DashboardOverview() {
             <MessageSquare className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">0</div>
-            <p className="text-xs text-muted-foreground">não lidas</p>
+            <div className="text-2xl font-bold text-foreground">{mensagensNaoLidas}</div>
+            <p className="text-xs text-muted-foreground">não lida{mensagensNaoLidas !== 1 ? "s" : ""}</p>
           </CardContent>
         </Card>
       </div>

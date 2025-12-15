@@ -2,20 +2,14 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
+import { useRef, useEffect } from "react"
 import { Send, User, Bot, MoreVertical } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
-
-interface Message {
-  id: string
-  content: string
-  sender: "user" | "support" | "system"
-  senderName: string
-  timestamp: Date
-}
+import { useMensagens } from "@/hooks/use-mensagens"
+import { useState } from "react"
 
 interface ChatUser {
   id: string
@@ -30,19 +24,10 @@ const mockUsers: ChatUser[] = [
   { id: "3", name: "Maria Santos", status: "offline", lastSeen: new Date(Date.now() - 3600000) },
 ]
 
-const initialMessages: Message[] = [
-  {
-    id: "1",
-    content: "Bem-vindo ao chat da Limarestas! Como podemos ajudar?",
-    sender: "support",
-    senderName: "Suporte Técnico",
-    timestamp: new Date(Date.now() - 60000),
-  },
-]
-
 export function ChatSection() {
   const { user } = useAuth()
-  const [messages, setMessages] = useState<Message[]>(initialMessages)
+  const { mensagens, addMensagem } = useMensagens()
+
   const [newMessage, setNewMessage] = useState("")
   const [selectedChat, setSelectedChat] = useState<ChatUser>(mockUsers[0])
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -53,21 +38,13 @@ export function ChatSection() {
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages])
+  }, [mensagens])
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newMessage.trim()) return
 
-    const userMessage: Message = {
-      id: Math.random().toString(36).substring(7),
-      content: newMessage,
-      sender: "user",
-      senderName: user?.name || "Utilizador",
-      timestamp: new Date(),
-    }
-
-    setMessages((prev) => [...prev, userMessage])
+    addMensagem(newMessage, user?.name || "Utilizador", "user")
     setNewMessage("")
 
     // Simulate response after a short delay
@@ -80,14 +57,7 @@ export function ChatSection() {
       ]
       const randomResponse = responses[Math.floor(Math.random() * responses.length)]
 
-      const supportMessage: Message = {
-        id: Math.random().toString(36).substring(7),
-        content: randomResponse,
-        sender: "support",
-        senderName: selectedChat.name,
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, supportMessage])
+      addMensagem(randomResponse, selectedChat.name, "support")
     }, 1500)
   }
 
@@ -102,7 +72,8 @@ export function ChatSection() {
     }
   }
 
-  const formatTime = (date: Date) => {
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
     return date.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })
   }
 
@@ -147,7 +118,7 @@ export function ChatSection() {
                         : chatUser.status === "away"
                           ? "Ausente"
                           : chatUser.lastSeen
-                            ? `Visto às ${formatTime(chatUser.lastSeen)}`
+                            ? `Visto às ${chatUser.lastSeen.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}`
                             : "Offline"}
                     </p>
                   </div>
@@ -186,15 +157,15 @@ export function ChatSection() {
 
           {/* Messages */}
           <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
-              <div key={message.id} className={`flex gap-3 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
+            {mensagens.map((message) => (
+              <div key={message.id} className={`flex gap-3 ${message.remetente === "user" ? "flex-row-reverse" : ""}`}>
                 <div
                   className={`
                   w-8 h-8 rounded-full flex items-center justify-center shrink-0
-                  ${message.sender === "user" ? "bg-accent" : "bg-primary/10"}
+                  ${message.remetente === "user" ? "bg-accent" : "bg-primary/10"}
                 `}
                 >
-                  {message.sender === "user" ? (
+                  {message.remetente === "user" ? (
                     <span className="text-xs font-semibold text-accent-foreground">
                       {user?.name.charAt(0).toUpperCase()}
                     </span>
@@ -206,17 +177,17 @@ export function ChatSection() {
                   className={`
                   max-w-[70%] rounded-2xl px-4 py-2
                   ${
-                    message.sender === "user"
+                    message.remetente === "user"
                       ? "bg-accent text-accent-foreground rounded-br-md"
                       : "bg-secondary text-foreground rounded-bl-md"
                   }
                 `}
                 >
-                  <p className="text-sm">{message.content}</p>
+                  <p className="text-sm">{message.conteudo}</p>
                   <p
                     className={`
                     text-xs mt-1
-                    ${message.sender === "user" ? "text-accent-foreground/70" : "text-muted-foreground"}
+                    ${message.remetente === "user" ? "text-accent-foreground/70" : "text-muted-foreground"}
                   `}
                   >
                     {formatTime(message.timestamp)}

@@ -2,22 +2,16 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useRef } from "react"
 import { Upload, FileText, Trash2, Download, File, ImageIcon, FileSpreadsheet } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-
-interface UploadedFile {
-  id: string
-  name: string
-  size: number
-  type: string
-  uploadedAt: Date
-  url: string
-}
+import { useDocumentos } from "@/hooks/use-documentos"
+import { useState } from "react"
 
 export function DocumentsSection() {
-  const [files, setFiles] = useState<UploadedFile[]>([])
+  const { documentos, addDocumento, deleteDocumento } = useDocumentos()
+
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -45,19 +39,13 @@ export function DocumentsSection() {
   }
 
   const processFiles = (newFiles: File[]) => {
-    const uploadedFiles: UploadedFile[] = newFiles.map((file) => ({
-      id: Math.random().toString(36).substring(7),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      uploadedAt: new Date(),
-      url: URL.createObjectURL(file),
-    }))
-    setFiles((prev) => [...prev, ...uploadedFiles])
+    newFiles.forEach((file) => {
+      addDocumento(file)
+    })
   }
 
-  const deleteFile = (id: string) => {
-    setFiles((prev) => prev.filter((file) => file.id !== id))
+  const handleDeleteFile = (id: string) => {
+    deleteDocumento(id)
   }
 
   const formatFileSize = (bytes: number) => {
@@ -119,18 +107,18 @@ export function DocumentsSection() {
       </Card>
 
       {/* Files list */}
-      {files.length > 0 && (
+      {documentos.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Ficheiros carregados</CardTitle>
             <CardDescription>
-              {files.length} ficheiro{files.length !== 1 ? "s" : ""} no total
+              {documentos.length} ficheiro{documentos.length !== 1 ? "s" : ""} no total
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {files.map((file) => {
-                const FileIcon = getFileIcon(file.type)
+              {documentos.map((file) => {
+                const FileIcon = getFileIcon(file.tipo)
                 return (
                   <div
                     key={file.id}
@@ -140,9 +128,9 @@ export function DocumentsSection() {
                       <FileIcon className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground truncate">{file.name}</p>
+                      <p className="font-medium text-foreground truncate">{file.nome}</p>
                       <p className="text-sm text-muted-foreground">
-                        {formatFileSize(file.size)} • {file.uploadedAt.toLocaleDateString("pt-PT")}
+                        {formatFileSize(file.tamanho)} • {new Date(file.dataUpload).toLocaleDateString("pt-PT")}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -152,7 +140,7 @@ export function DocumentsSection() {
                         className="text-muted-foreground hover:text-foreground"
                         asChild
                       >
-                        <a href={file.url} download={file.name}>
+                        <a href={file.url} download={file.nome}>
                           <Download className="w-4 h-4" />
                         </a>
                       </Button>
@@ -160,7 +148,7 @@ export function DocumentsSection() {
                         variant="ghost"
                         size="icon"
                         className="text-muted-foreground hover:text-destructive"
-                        onClick={() => deleteFile(file.id)}
+                        onClick={() => handleDeleteFile(file.id)}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -174,7 +162,7 @@ export function DocumentsSection() {
       )}
 
       {/* Empty state */}
-      {files.length === 0 && (
+      {documentos.length === 0 && (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">

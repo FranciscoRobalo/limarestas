@@ -10,20 +10,17 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar, Clock, CheckCircle2, User, Phone } from "lucide-react"
+import { useVisitas } from "@/hooks/use-visitas"
+import { useObras } from "@/hooks/use-obras"
 
 interface VisitaFormData {
-  obra: string
+  obraId: string
   data: string
   horario: string
   contacto: string
   responsavel: string
   observacoes: string
 }
-
-const obrasDisponiveis = [
-  { id: "OBR-2024-001", nome: "Remodelação Apartamento T3 - Cascais" },
-  { id: "OBR-2024-002", nome: "Construção Moradia V4 - Sintra" },
-]
 
 const horariosDisponiveis = [
   "09:00 - 10:00",
@@ -35,34 +32,12 @@ const horariosDisponiveis = [
   "17:00 - 18:00",
 ]
 
-interface VisitaAgendada {
-  id: string
-  obra: string
-  data: string
-  horario: string
-  status: "confirmada" | "pendente" | "concluida"
-}
-
-const visitasAgendadas: VisitaAgendada[] = [
-  {
-    id: "VIS-001",
-    obra: "Remodelação Apartamento T3 - Cascais",
-    data: "2024-02-05",
-    horario: "10:00 - 11:00",
-    status: "confirmada",
-  },
-  {
-    id: "VIS-002",
-    obra: "Construção Moradia V4 - Sintra",
-    data: "2024-02-08",
-    horario: "14:00 - 15:00",
-    status: "pendente",
-  },
-]
-
 export function AgendarVisitaSection() {
+  const { visitas, addVisita, updateVisita, deleteVisita } = useVisitas()
+  const { obras } = useObras()
+
   const [formData, setFormData] = useState<VisitaFormData>({
-    obra: "",
+    obraId: "",
     data: "",
     horario: "",
     contacto: "",
@@ -73,8 +48,31 @@ export function AgendarVisitaSection() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const obra = obras.find((o) => o.id === formData.obraId)
+    if (!obra) return
+
+    addVisita({
+      obraId: formData.obraId,
+      obraNome: obra.nome,
+      data: formData.data,
+      horario: formData.horario,
+      responsavel: formData.responsavel,
+      contacto: formData.contacto,
+      observacoes: formData.observacoes,
+    })
+
     setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 3000)
+    setTimeout(() => {
+      setSubmitted(false)
+      setFormData({
+        obraId: "",
+        data: "",
+        horario: "",
+        contacto: "",
+        responsavel: "",
+        observacoes: "",
+      })
+    }, 3000)
   }
 
   const handleChange = (field: keyof VisitaFormData, value: string) => {
@@ -117,16 +115,22 @@ export function AgendarVisitaSection() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="obra">Obra *</Label>
-                <Select value={formData.obra} onValueChange={(value) => handleChange("obra", value)}>
+                <Select value={formData.obraId} onValueChange={(value) => handleChange("obraId", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a obra" />
                   </SelectTrigger>
                   <SelectContent>
-                    {obrasDisponiveis.map((obra) => (
-                      <SelectItem key={obra.id} value={obra.id}>
-                        {obra.nome}
+                    {obras.length === 0 ? (
+                      <SelectItem value="none" disabled>
+                        Nenhuma obra disponível
                       </SelectItem>
-                    ))}
+                    ) : (
+                      obras.map((obra) => (
+                        <SelectItem key={obra.id} value={obra.id}>
+                          {obra.nome}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -206,7 +210,7 @@ export function AgendarVisitaSection() {
                 />
               </div>
 
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={obras.length === 0}>
                 Agendar Visita
               </Button>
             </form>
@@ -217,14 +221,14 @@ export function AgendarVisitaSection() {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Visitas Agendadas</h3>
 
-          {visitasAgendadas.length === 0 ? (
+          {visitas.length === 0 ? (
             <Card className="p-8 text-center">
               <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">Nenhuma visita agendada</p>
             </Card>
           ) : (
             <div className="space-y-3">
-              {visitasAgendadas.map((visita) => (
+              {visitas.map((visita) => (
                 <Card
                   key={visita.id}
                   className={`border-l-4 ${
@@ -232,13 +236,15 @@ export function AgendarVisitaSection() {
                       ? "border-l-green-500"
                       : visita.status === "pendente"
                         ? "border-l-yellow-500"
-                        : "border-l-muted"
+                        : visita.status === "concluida"
+                          ? "border-l-muted"
+                          : "border-l-red-500"
                   }`}
                 >
                   <CardContent className="pt-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-2">
-                        <p className="font-medium text-foreground">{visita.obra}</p>
+                        <p className="font-medium text-foreground">{visita.obraNome}</p>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
@@ -260,21 +266,35 @@ export function AgendarVisitaSection() {
                             ? "bg-green-500/10 text-green-600 border border-green-500/30"
                             : visita.status === "pendente"
                               ? "bg-yellow-500/10 text-yellow-600 border border-yellow-500/30"
-                              : "bg-muted text-muted-foreground"
+                              : visita.status === "concluida"
+                                ? "bg-muted text-muted-foreground"
+                                : "bg-red-500/10 text-red-600 border border-red-500/30"
                         }`}
                       >
                         {visita.status === "confirmada"
                           ? "Confirmada"
                           : visita.status === "pendente"
                             ? "Pendente"
-                            : "Concluída"}
+                            : visita.status === "concluida"
+                              ? "Concluída"
+                              : "Cancelada"}
                       </div>
                     </div>
                     <div className="flex gap-2 mt-4">
-                      <Button variant="outline" size="sm">
-                        Reagendar
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updateVisita(visita.id, { status: "confirmada" })}
+                        disabled={visita.status === "confirmada"}
+                      >
+                        Confirmar
                       </Button>
-                      <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 bg-transparent">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 bg-transparent"
+                        onClick={() => deleteVisita(visita.id)}
+                      >
                         Cancelar
                       </Button>
                     </div>
