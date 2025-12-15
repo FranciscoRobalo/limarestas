@@ -15,6 +15,7 @@ import {
   ClipboardCheck,
   Calendar,
   Building2,
+  GitBranch,
 } from "lucide-react"
 
 interface DashboardLayoutProps {
@@ -23,6 +24,7 @@ interface DashboardLayoutProps {
 
 const navigation = [
   { name: "Painel", href: "/dashboard", icon: LayoutDashboard, id: "dashboard" },
+  { name: "Gestão de Obras", href: "/dashboard?tab=workflow", icon: GitBranch, id: "workflow" },
   { name: "Nova Obra", href: "/dashboard?tab=nova-obra", icon: PlusCircle, id: "nova-obra" },
   { name: "Pré-Validação", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao" },
   { name: "Agendar Visita", href: "/dashboard?tab=agendar", icon: Calendar, id: "agendar" },

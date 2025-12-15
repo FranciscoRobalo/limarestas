@@ -7,10 +7,15 @@ import { NovaObraSection } from "./nova-obra-section"
 import { ValidacaoSection } from "./validacao-section"
 import { AgendarVisitaSection } from "./agendar-visita-section"
 import { ObrasDisponiveisSection } from "./obras-disponiveis-section"
+import { WorkflowSection } from "./workflow-section"
 
 export function DashboardContent() {
   const searchParams = useSearchParams()
   const tab = searchParams.get("tab")
+
+  if (tab === "workflow") {
+    return <WorkflowSection />
+  }
 
   if (tab === "nova-obra") {
     return <NovaObraSection />
