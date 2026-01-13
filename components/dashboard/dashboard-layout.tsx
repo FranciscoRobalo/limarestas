@@ -1,8 +1,10 @@
 "use client"
 
+import type React from "react"
+
 import { useState, type ReactNode } from "react"
 import Link from "next/link"
-import { useAuth } from "@/contexts/auth-context"
+import { useAuth, type UserRole } from "@/contexts/auth-context"
 import {
   LayoutDashboard,
   FileText,
@@ -16,26 +18,101 @@ import {
   Calendar,
   Building2,
   GitBranch,
+  Activity,
+  Megaphone,
+  Bell,
+  Settings,
+  CalendarCheck,
 } from "lucide-react"
 
 interface DashboardLayoutProps {
   children: ReactNode
 }
 
-const navigation = [
-  { name: "Painel", href: "/dashboard", icon: LayoutDashboard, id: "dashboard" },
-  { name: "Gestão de Obras", href: "/dashboard?tab=workflow", icon: GitBranch, id: "workflow" },
-  { name: "Nova Obra", href: "/dashboard?tab=nova-obra", icon: PlusCircle, id: "nova-obra" },
-  { name: "Pré-Validação", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao" },
-  { name: "Agendar Visita", href: "/dashboard?tab=agendar", icon: Calendar, id: "agendar" },
-  { name: "Obras Disponíveis", href: "/dashboard?tab=obras", icon: Building2, id: "obras" },
-  { name: "Documentos", href: "/dashboard?tab=documents", icon: FileText, id: "documents" },
-  { name: "Mensagens", href: "/dashboard?tab=chat", icon: MessageSquare, id: "chat" },
+interface NavItem {
+  name: string
+  href: string
+  icon: React.ElementType
+  id: string
+  roles: UserRole[]
+}
+
+const navigation: NavItem[] = [
+  { name: "Painel", href: "/dashboard", icon: LayoutDashboard, id: "dashboard", roles: ["admin", "tecnico", "public"] },
+  { name: "Gestão de Obras", href: "/dashboard?tab=workflow", icon: GitBranch, id: "workflow", roles: ["admin"] },
+  { name: "Nova Obra", href: "/dashboard?tab=nova-obra", icon: PlusCircle, id: "nova-obra", roles: ["admin"] },
+  { name: "Pré-Validação", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao", roles: ["admin"] },
+  {
+    name: "Agendar Visita",
+    href: "/dashboard?tab=agendar",
+    icon: Calendar,
+    id: "agendar",
+    roles: ["admin", "tecnico"],
+  },
+  {
+    name: "Visitas Agendadas",
+    href: "/dashboard?tab=visitas-agendadas",
+    icon: CalendarCheck,
+    id: "visitas-agendadas",
+    roles: ["public"],
+  },
+  {
+    name: "Obras Disponíveis",
+    href: "/dashboard?tab=obras",
+    icon: Building2,
+    id: "obras",
+    roles: ["admin", "tecnico"],
+  },
+  {
+    name: "Documentos",
+    href: "/dashboard?tab=documents",
+    icon: FileText,
+    id: "documents",
+    roles: ["admin", "tecnico", "public"],
+  },
+  {
+    name: "Mensagens",
+    href: "/dashboard?tab=chat",
+    icon: MessageSquare,
+    id: "chat",
+    roles: ["admin", "tecnico", "public"],
+  },
+  {
+    name: "Notificações",
+    href: "/dashboard?tab=notifications",
+    icon: Bell,
+    id: "notifications",
+    roles: ["admin", "tecnico", "public"],
+  },
+  { name: "Registo de Atividades", href: "/dashboard?tab=logs", icon: Activity, id: "logs", roles: ["admin"] },
+  {
+    name: "Publicidade",
+    href: "/dashboard?tab=publicidade",
+    icon: Megaphone,
+    id: "publicidade",
+    roles: ["publicidade", "admin"],
+  },
+  {
+    name: "Definições de Conta",
+    href: "/dashboard?tab=settings",
+    icon: Settings,
+    id: "settings",
+    roles: ["admin", "tecnico", "public"],
+  },
 ]
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const filteredNavigation = navigation.filter((item) => user?.role && item.roles.includes(user.role))
+
+  const roleLabels: Record<UserRole, string> = {
+    admin: "Administrador",
+    tecnico: "Técnico",
+    public: "Utilizador",
+    publicidade: "Publicidade",
+  }
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -78,14 +155,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
               <div>
                 <p className="font-medium text-foreground">{user?.name}</p>
-                <p className="text-sm text-muted-foreground">@{user?.username}</p>
+                <p className="text-sm text-muted-foreground">{user?.role && roleLabels[user.role]}</p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
-            {navigation.map((item) => (
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            {filteredNavigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
@@ -129,8 +206,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             >
               <Menu className="w-6 h-6" />
             </button>
-            <h1 className="text-lg font-semibold text-foreground lg:text-xl">Área de Cliente</h1>
-            <div className="w-6 lg:hidden" /> {/* Spacer for centering */}
+            <h1 className="text-lg font-semibold text-foreground lg:text-xl">
+              {user?.role === "publicidade" ? "Plataforma de Publicidade" : "Área de Cliente"}
+            </h1>
+            <div className="w-6 lg:hidden" />
           </div>
         </header>
 

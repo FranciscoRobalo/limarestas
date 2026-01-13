@@ -87,3 +87,58 @@ export interface Convite {
   dataEnvio: string
   status: "pendente" | "aceite" | "recusado"
 }
+
+export interface ActivityLog {
+  id: string
+  userId: string
+  userName: string
+  userRole: string
+  action: string
+  details: string
+  entityType: "obra" | "documento" | "visita" | "mensagem" | "usuario" | "publicidade" | "sistema"
+  entityId?: string
+  timestamp: string
+  ipAddress?: string
+}
+
+export interface Advertisement {
+  id: string
+  empresaId: string
+  empresaNome: string
+  titulo: string
+  descricao: string
+  imagemUrl: string
+  linkUrl: string
+  posicao: "banner-topo" | "sidebar" | "footer" | "entre-conteudo"
+  dataInicio: string
+  dataFim: string
+  status: "pendente" | "ativo" | "pausado" | "expirado"
+  visualizacoes: number
+  cliques: number
+  precoTotal: number
+}
+
+export interface PacotePublicidade {
+  id: string
+  nome: string
+  descricao: string
+  posicao: "banner-topo" | "sidebar" | "footer" | "entre-conteudo"
+  duracao: number // dias
+  preco: number
+  destaque: boolean
+}
+
+export interface PedidoPublicidade {
+  id: string
+  pacoteId: string
+  empresaNome: string
+  empresaEmail: string
+  empresaTelefone: string
+  nif: string
+  titulo: string
+  descricao: string
+  imagemUrl: string
+  linkUrl: string
+  dataSubmissao: string
+  status: "pendente" | "aprovado" | "rejeitado" | "pago"
+}

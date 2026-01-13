@@ -56,7 +56,7 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-primary-foreground/10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <p className="text-sm text-primary-foreground/60">
-              © {new Date().getFullYear()} LAT - Limarestas por Francisco Robalo 936139063 @
+              © {new Date().getFullYear()} LAT - Limarestas. Todos os direitos reservados.
             </p>
             <div className="flex gap-6 text-sm text-primary-foreground/60">
               <Link href="#" className="hover:text-primary-foreground transition-colors">
