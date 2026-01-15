@@ -1,7 +1,17 @@
 "use client"
 
 import Link from "next/link"
-import { MessageSquare, Upload, PlusCircle, ClipboardCheck, Calendar, Building2 } from "lucide-react"
+import {
+  MessageSquare,
+  Upload,
+  PlusCircle,
+  ClipboardCheck,
+  Calendar,
+  Building2,
+  BarChart3,
+  Receipt,
+  CalendarDays,
+} from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useObras } from "@/hooks/use-obras"
@@ -24,6 +34,9 @@ export function DashboardOverview() {
     return visitaDate >= hoje && visitaDate <= umaSemana && v.status !== "cancelada"
   }).length
   const mensagensNaoLidas = getNaoLidas().length
+
+  const isAdmin = user?.role === "admin"
+  const isTecnico = user?.role === "tecnico"
 
   return (
     <div className="space-y-8">
@@ -82,57 +95,127 @@ export function DashboardOverview() {
         </Card>
       </div>
 
+      {isAdmin && (
+        <div>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Ferramentas de Gestão</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link href="/dashboard?tab=analytics">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
+                    <BarChart3 className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <CardTitle className="text-base">Analytics</CardTitle>
+                  <CardDescription>Visualize métricas e desempenho da plataforma.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard?tab=invoices">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-4 group-hover:bg-green-500/20 transition-colors">
+                    <Receipt className="w-6 h-6 text-green-600" />
+                  </div>
+                  <CardTitle className="text-base">Faturação</CardTitle>
+                  <CardDescription>Gerencie faturas e acompanhe pagamentos.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard?tab=calendar">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
+                    <CalendarDays className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <CardTitle className="text-base">Calendário</CardTitle>
+                  <CardDescription>Visualize agenda de visitas e eventos.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {isTecnico && (
+        <div>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Ferramentas</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Link href="/dashboard?tab=calendar">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
+                    <CalendarDays className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <CardTitle className="text-base">Calendário</CardTitle>
+                  <CardDescription>Visualize agenda de visitas e eventos.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Quick actions */}
       <div>
         <h3 className="text-lg font-semibold text-foreground mb-4">Ações rápidas</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Link href="/dashboard?tab=nova-obra">
-            <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                  <PlusCircle className="w-6 h-6 text-primary" />
-                </div>
-                <CardTitle className="text-base">Nova Obra</CardTitle>
-                <CardDescription>Submeta um novo projeto para análise.</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
+          {isAdmin && (
+            <Link href="/dashboard?tab=nova-obra">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <PlusCircle className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-base">Nova Obra</CardTitle>
+                  <CardDescription>Submeta um novo projeto para análise.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          )}
 
-          <Link href="/dashboard?tab=validacao">
-            <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-4 group-hover:bg-green-500/20 transition-colors">
-                  <ClipboardCheck className="w-6 h-6 text-green-600" />
-                </div>
-                <CardTitle className="text-base">Pré-Validação</CardTitle>
-                <CardDescription>Acompanhe o estado das suas obras.</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
+          {isAdmin && (
+            <Link href="/dashboard?tab=validacao">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-4 group-hover:bg-green-500/20 transition-colors">
+                    <ClipboardCheck className="w-6 h-6 text-green-600" />
+                  </div>
+                  <CardTitle className="text-base">Pré-Validação</CardTitle>
+                  <CardDescription>Acompanhe o estado das suas obras.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          )}
 
-          <Link href="/dashboard?tab=agendar">
-            <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
-                  <Calendar className="w-6 h-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-base">Agendar Visita</CardTitle>
-                <CardDescription>Marque uma visita técnica à obra.</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
+          {(isAdmin || isTecnico) && (
+            <Link href="/dashboard?tab=agendar">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
+                    <Calendar className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <CardTitle className="text-base">Agendar Visita</CardTitle>
+                  <CardDescription>Marque uma visita técnica à obra.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          )}
 
-          <Link href="/dashboard?tab=obras">
-            <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
-                  <Building2 className="w-6 h-6 text-accent" />
-                </div>
-                <CardTitle className="text-base">Obras Disponíveis</CardTitle>
-                <CardDescription>Explore concursos e oportunidades.</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
+          {(isAdmin || isTecnico) && (
+            <Link href="/dashboard?tab=obras">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
+                    <Building2 className="w-6 h-6 text-accent" />
+                  </div>
+                  <CardTitle className="text-base">Obras Disponíveis</CardTitle>
+                  <CardDescription>Explore concursos e oportunidades.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          )}
         </div>
       </div>
 

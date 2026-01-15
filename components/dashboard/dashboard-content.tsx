@@ -14,11 +14,22 @@ import { PublicidadeSection } from "./publicidade-section"
 import { VisitasAgendadasSection } from "./visitas-agendadas-section"
 import { SettingsSection } from "./settings-section"
 import { NotificationsSection } from "./notifications-section"
+import { AnalyticsSection } from "./analytics-section"
+import { InvoicesSection } from "./invoices-section"
+import { CalendarSection } from "./calendar-section"
 
 export function DashboardContent() {
   const searchParams = useSearchParams()
   const tab = searchParams.get("tab")
   const { user } = useAuth()
+
+  if (tab === "analytics" && user?.role === "admin") {
+    return <AnalyticsSection />
+  }
+
+  if (tab === "calendar" && (user?.role === "admin" || user?.role === "tecnico")) {
+    return <CalendarSection />
+  }
 
   if (tab === "workflow" && user?.role === "admin") {
     return <WorkflowSection />
@@ -42,6 +53,10 @@ export function DashboardContent() {
 
   if (tab === "obras" && (user?.role === "admin" || user?.role === "tecnico")) {
     return <ObrasDisponiveisSection />
+  }
+
+  if (tab === "invoices" && user?.role === "admin") {
+    return <InvoicesSection />
   }
 
   if (tab === "documents") {

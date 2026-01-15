@@ -23,6 +23,9 @@ import {
   Bell,
   Settings,
   CalendarCheck,
+  BarChart3,
+  Receipt,
+  CalendarDays,
 } from "lucide-react"
 
 interface DashboardLayoutProps {
@@ -39,6 +42,14 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { name: "Painel", href: "/dashboard", icon: LayoutDashboard, id: "dashboard", roles: ["admin", "tecnico", "public"] },
+  { name: "Analytics", href: "/dashboard?tab=analytics", icon: BarChart3, id: "analytics", roles: ["admin"] },
+  {
+    name: "Calendário",
+    href: "/dashboard?tab=calendar",
+    icon: CalendarDays,
+    id: "calendar",
+    roles: ["admin", "tecnico"],
+  },
   { name: "Gestão de Obras", href: "/dashboard?tab=workflow", icon: GitBranch, id: "workflow", roles: ["admin"] },
   { name: "Nova Obra", href: "/dashboard?tab=nova-obra", icon: PlusCircle, id: "nova-obra", roles: ["admin"] },
   { name: "Pré-Validação", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao", roles: ["admin"] },
@@ -63,6 +74,7 @@ const navigation: NavItem[] = [
     id: "obras",
     roles: ["admin", "tecnico"],
   },
+  { name: "Faturação", href: "/dashboard?tab=invoices", icon: Receipt, id: "invoices", roles: ["admin"] },
   {
     name: "Documentos",
     href: "/dashboard?tab=documents",

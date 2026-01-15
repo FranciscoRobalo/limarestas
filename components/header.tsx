@@ -10,6 +10,10 @@ const navigation = [
   { name: "Início", href: "#inicio" },
   { name: "Sobre", href: "#sobre" },
   { name: "Serviços", href: "#servicos" },
+  { name: "Portfólio", href: "#portfolio" },
+  { name: "Calculadora", href: "#calculadora" },
+  { name: "Equipa", href: "#equipa" },
+  { name: "FAQ", href: "#faq" },
   { name: "Contacto", href: "#contacto" },
 ]
 
@@ -28,7 +32,7 @@ export function Header() {
         </Link>
 
         {/* Desktop navigation */}
-        <div className="hidden md:flex md:items-center md:gap-8">
+        <div className="hidden lg:flex lg:items-center lg:gap-6">
           {navigation.map((item) => (
             <Link
               key={item.name}
@@ -40,7 +44,7 @@ export function Header() {
           ))}
 
           {isAuthenticated ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ml-4">
               <Button asChild variant="outline" className="gap-2 bg-transparent">
                 <Link href="/dashboard">
                   <User className="w-4 h-4" />
@@ -57,7 +61,7 @@ export function Header() {
               </Button>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ml-4">
               <Button asChild variant="outline">
                 <Link href="/login">Entrar</Link>
               </Button>
@@ -71,7 +75,7 @@ export function Header() {
         {/* Mobile menu button */}
         <button
           type="button"
-          className="md:hidden p-2 text-muted-foreground"
+          className="lg:hidden p-2 text-muted-foreground"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -80,7 +84,7 @@ export function Header() {
 
       {/* Mobile navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-background border-b border-border">
+        <div className="lg:hidden bg-background border-b border-border">
           <div className="px-6 py-4 space-y-4">
             {navigation.map((item) => (
               <Link
