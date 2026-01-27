@@ -19,15 +19,13 @@ import {
   Building2,
   GitBranch,
   Activity,
+  Megaphone,
   Bell,
   Settings,
   CalendarCheck,
   BarChart3,
   Receipt,
   CalendarDays,
-  Users,
-  Star,
-  CreditCard,
 } from "lucide-react"
 
 interface DashboardLayoutProps {
@@ -43,37 +41,75 @@ interface NavItem {
 }
 
 const navigation: NavItem[] = [
-  // Painel - todos os utilizadores
-  { name: "Painel", href: "/dashboard", icon: LayoutDashboard, id: "dashboard", roles: ["admin", "tecnico", "cliente", "construtor", "empreiteiro"] },
-  
-  // Admin only
-  { name: "Calendário", href: "/dashboard?tab=calendar", icon: CalendarDays, id: "calendar", roles: ["admin"] },
+  { name: "Painel", href: "/dashboard", icon: LayoutDashboard, id: "dashboard", roles: ["admin", "tecnico", "public"] },
+  { name: "Analytics", href: "/dashboard?tab=analytics", icon: BarChart3, id: "analytics", roles: ["admin"] },
+  {
+    name: "Calendário",
+    href: "/dashboard?tab=calendar",
+    icon: CalendarDays,
+    id: "calendar",
+    roles: ["admin", "tecnico"],
+  },
   { name: "Gestão de Obras", href: "/dashboard?tab=workflow", icon: GitBranch, id: "workflow", roles: ["admin"] },
   { name: "Aprovação de Orçamentos", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao", roles: ["admin"] },
-  { name: "Lista de Empreiteiros", href: "/dashboard?tab=empreiteiros", icon: Users, id: "empreiteiros", roles: ["admin"] },
+  {
+    name: "Visitas Agendadas",
+    href: "/dashboard?tab=visitas-agendadas",
+    icon: CalendarCheck,
+    id: "visitas-agendadas",
+    roles: ["public"],
+  },
+  {
+    name: "Lista de Empreiteiros",
+    href: "/dashboard?tab=empreiteiros",
+    icon: Building2,
+    id: "empreiteiros",
+    roles: ["admin", "tecnico"],
+  },
+  {
+    name: "Painel Técnico",
+    href: "/dashboard?tab=painel-tecnico",
+    icon: ClipboardCheck,
+    id: "painel-tecnico",
+    roles: ["admin"],
+  },
   { name: "Faturação", href: "/dashboard?tab=invoices", icon: Receipt, id: "invoices", roles: ["admin"] },
-  { name: "Feedback de Clientes", href: "/dashboard?tab=feedback", icon: Star, id: "feedback", roles: ["admin"] },
+  {
+    name: "Consulta de Contas",
+    href: "/dashboard?tab=documents",
+    icon: FileText,
+    id: "documents",
+    roles: ["admin", "tecnico", "public"],
+  },
+  {
+    name: "Mensagens",
+    href: "/dashboard?tab=chat",
+    icon: MessageSquare,
+    id: "chat",
+    roles: ["admin", "tecnico", "public"],
+  },
+  {
+    name: "Notificações",
+    href: "/dashboard?tab=notifications",
+    icon: Bell,
+    id: "notifications",
+    roles: ["admin", "tecnico", "public"],
+  },
+  {
+    name: "Feedback de Clientes",
+    href: "/dashboard?tab=feedback",
+    icon: Activity,
+    id: "feedback",
+    roles: ["admin"],
+  },
   { name: "Registo de Atividades", href: "/dashboard?tab=logs", icon: Activity, id: "logs", roles: ["admin"] },
-  
-  // Técnico (Mediador)
-  { name: "Agendar Visita", href: "/dashboard?tab=agendar", icon: Calendar, id: "agendar", roles: ["admin", "tecnico"] },
-  { name: "Lista de Obras", href: "/dashboard?tab=obras", icon: Building2, id: "obras", roles: ["tecnico"] },
-  
-  // Cliente
-  { name: "Visitas Agendadas", href: "/dashboard?tab=visitas-agendadas", icon: CalendarCheck, id: "visitas-agendadas", roles: ["cliente"] },
-  
-  // Construtor
-  { name: "Minhas Obras", href: "/dashboard?tab=minhas-obras", icon: Building2, id: "minhas-obras", roles: ["construtor"] },
-  
-  // Empreiteiro
-  { name: "Obras Disponíveis", href: "/dashboard?tab=obras-disponiveis", icon: Building2, id: "obras-disponiveis", roles: ["empreiteiro"] },
-  { name: "Pedido de Orçamento", href: "/dashboard?tab=pedido-orcamento", icon: CreditCard, id: "pedido-orcamento", roles: ["empreiteiro"] },
-  
-  // Comum a vários utilizadores
-  { name: "Consulta de Contas", href: "/dashboard?tab=contas", icon: FileText, id: "contas", roles: ["admin", "tecnico", "cliente", "construtor", "empreiteiro"] },
-  { name: "Mensagens", href: "/dashboard?tab=chat", icon: MessageSquare, id: "chat", roles: ["admin", "tecnico", "cliente", "construtor", "empreiteiro"] },
-  { name: "Notificações", href: "/dashboard?tab=notifications", icon: Bell, id: "notifications", roles: ["admin", "tecnico", "cliente", "construtor", "empreiteiro"] },
-  { name: "Definições de Conta", href: "/dashboard?tab=settings", icon: Settings, id: "settings", roles: ["admin", "tecnico", "cliente", "construtor", "empreiteiro"] },
+  {
+    name: "Definições de Conta",
+    href: "/dashboard?tab=settings",
+    icon: Settings,
+    id: "settings",
+    roles: ["admin", "tecnico", "public"],
+  },
 ]
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -84,10 +120,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const roleLabels: Record<UserRole, string> = {
     admin: "Administrador",
-    tecnico: "Mediador",
-    cliente: "Cliente",
-    construtor: "Construtor",
-    empreiteiro: "Empreiteiro",
+    tecnico: "Técnico",
+    public: "Utilizador",
+    publicidade: "Publicidade",
   }
 
   return (
@@ -183,7 +218,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Menu className="w-6 h-6" />
             </button>
             <h1 className="text-lg font-semibold text-foreground lg:text-xl">
-              Painel LAT
+              {user?.role === "admin" ? "Painel Administrativo" : user?.role === "tecnico" ? "Painel Técnico" : "Painel de Gestão"}
             </h1>
             <div className="w-6 lg:hidden" />
           </div>

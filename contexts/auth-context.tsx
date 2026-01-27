@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { useRouter } from "next/navigation"
 
-export type UserRole = "admin" | "tecnico" | "cliente" | "construtor" | "empreiteiro"
+export type UserRole = "admin" | "tecnico" | "public" | "publicidade"
 
 interface User {
   username: string
@@ -22,10 +22,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 const VALID_USERS: Record<string, { password: string; name: string; role: UserRole }> = {
   admin: { password: "admin", name: "Administrador", role: "admin" },
-  tecnico: { password: "tecnico", name: "Mediador", role: "tecnico" },
-  cliente: { password: "cliente", name: "Cliente", role: "cliente" },
-  construtor: { password: "construtor", name: "Construtor", role: "construtor" },
-  empreiteiro: { password: "empreiteiro", name: "Empreiteiro", role: "empreiteiro" },
+  tecnico: { password: "tecnico", name: "Técnico", role: "tecnico" },
+  public: { password: "public", name: "Utilizador", role: "public" },
+  publicidade: { password: "publicidade", name: "Publicidade", role: "publicidade" },
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

@@ -60,9 +60,9 @@ export function ValidacaoSection() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-serif text-foreground mb-2">Aprovação de Orçamentos</h2>
+        <h2 className="text-2xl font-serif text-foreground mb-2">Pré-Validação de Obras</h2>
         <p className="text-muted-foreground">
-          Pré-validação de obras dos mediadores (técnicos). Aprove ou recuse orçamentos em destaque no painel principal.
+          Acompanhe o estado de aprovação de cada obra submetida. O sistema de cores indica o progresso de cada projeto.
         </p>
       </div>
 

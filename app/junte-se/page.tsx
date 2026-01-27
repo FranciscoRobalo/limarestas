@@ -1,352 +1,257 @@
-"use client"
-
-import React from "react"
-
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useLanguage } from "@/contexts/language-context"
-import {
-  Building2,
-  Ruler,
-  HardHat,
-  Hammer,
-  Home,
+import { 
+  Building2, 
+  HardHat, 
+  Ruler, 
+  Home, 
+  Building, 
   Landmark,
   ArrowRight,
   CheckCircle2,
-  Upload,
-  FileText,
+  Users,
+  Shield,
+  TrendingUp
 } from "lucide-react"
-import { useState } from "react"
 
-const categories = [
+const professionCategories = [
   {
-    key: "join.architects",
+    title: "Arquitetos",
+    description: "Profissionais de arquitetura que pretendem expandir a sua rede de projetos e clientes.",
     icon: Ruler,
-    description: {
-      pt: "Arquitetos e gabinetes de arquitetura",
-      en: "Architects and architecture firms",
-      es: "Arquitectos y estudios de arquitectura",
-    },
-    requirements: {
-      pt: ["Licenciatura em Arquitetura", "Inscrição na Ordem dos Arquitetos", "Portfólio de projetos"],
-      en: ["Architecture degree", "Registration with Architects Association", "Project portfolio"],
-      es: ["Licenciatura en Arquitectura", "Inscripción en el Colegio de Arquitectos", "Portafolio de proyectos"],
-    },
+    benefits: ["Acesso a projetos qualificados", "Gestão simplificada de propostas", "Visibilidade aumentada"]
   },
   {
-    key: "join.engineers",
+    title: "Engenheiros",
+    description: "Engenheiros civis e de especialidade para projetos de construção e reabilitação.",
     icon: Building2,
-    description: {
-      pt: "Engenheiros civis e de estruturas",
-      en: "Civil and structural engineers",
-      es: "Ingenieros civiles y de estructuras",
-    },
-    requirements: {
-      pt: ["Licenciatura em Engenharia", "Inscrição na Ordem dos Engenheiros", "Experiência comprovada"],
-      en: ["Engineering degree", "Registration with Engineers Association", "Proven experience"],
-      es: ["Licenciatura en Ingeniería", "Inscripción en el Colegio de Ingenieros", "Experiencia comprobada"],
-    },
+    benefits: ["Projetos técnicos diversificados", "Parcerias estratégicas", "Suporte administrativo"]
   },
   {
-    key: "join.builders",
+    title: "Construtores",
+    description: "Empresas de construção civil para obras de diversos tipos e dimensões.",
     icon: HardHat,
-    description: {
-      pt: "Empresas de construção e construtores",
-      en: "Construction companies and builders",
-      es: "Empresas de construcción y constructores",
-    },
-    requirements: {
-      pt: ["Alvará de construção", "Seguro de responsabilidade civil", "Referências de obras"],
-      en: ["Construction permit", "Liability insurance", "Work references"],
-      es: ["Licencia de construcción", "Seguro de responsabilidad civil", "Referencias de obras"],
-    },
+    benefits: ["Obras pré-validadas", "Pagamentos seguros", "Gestão de documentação"]
   },
   {
-    key: "join.contractors",
-    icon: Hammer,
-    description: {
-      pt: "Empreiteiros e subempreiteiros especializados",
-      en: "Contractors and specialized subcontractors",
-      es: "Contratistas y subcontratistas especializados",
-    },
-    requirements: {
-      pt: ["Licença de atividade", "Certificações profissionais", "Equipa qualificada"],
-      en: ["Activity license", "Professional certifications", "Qualified team"],
-      es: ["Licencia de actividad", "Certificaciones profesionales", "Equipo calificado"],
-    },
+    title: "Empreiteiros",
+    description: "Empreiteiros especializados em diferentes áreas da construção.",
+    icon: Building,
+    benefits: ["Trabalhos especializados", "Rede de contactos", "Crescimento do negócio"]
   },
   {
-    key: "join.condominiums",
+    title: "Condomínios",
+    description: "Gestores de condomínios e administradores de propriedades.",
     icon: Home,
-    description: {
-      pt: "Gestão e administração de condomínios",
-      en: "Condominium management and administration",
-      es: "Gestión y administración de condominios",
-    },
-    requirements: {
-      pt: ["Licença AMI (se aplicável)", "Experiência em gestão", "Conhecimento legal"],
-      en: ["AMI license (if applicable)", "Management experience", "Legal knowledge"],
-      es: ["Licencia AMI (si aplica)", "Experiencia en gestión", "Conocimiento legal"],
-    },
+    benefits: ["Soluções para manutenção", "Orçamentos competitivos", "Acompanhamento de obras"]
   },
   {
-    key: "join.realestate",
+    title: "Imobiliários",
+    description: "Agentes e agências imobiliárias que necessitam de parceiros de construção.",
     icon: Landmark,
-    description: {
-      pt: "Agências imobiliárias e consultores",
-      en: "Real estate agencies and consultants",
-      es: "Agencias inmobiliarias y consultores",
-    },
-    requirements: {
-      pt: ["Licença AMI obrigatória", "Seguro profissional", "Base de dados de imóveis"],
-      en: ["Mandatory AMI license", "Professional insurance", "Property database"],
-      es: ["Licencia AMI obligatoria", "Seguro profesional", "Base de datos de inmuebles"],
-    },
-  },
+    benefits: ["Valorização de imóveis", "Parceiros de confiança", "Serviço integrado"]
+  }
 ]
 
-export default function JoinUsPage() {
-  const { t, language } = useLanguage()
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [formSubmitted, setFormSubmitted] = useState(false)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setFormSubmitted(true)
+const benefits = [
+  {
+    icon: Users,
+    title: "Rede de Contactos",
+    description: "Acesso a uma vasta rede de clientes e profissionais do setor."
+  },
+  {
+    icon: Shield,
+    title: "Projetos Validados",
+    description: "Todos os projetos são pré-validados pela nossa equipa."
+  },
+  {
+    icon: TrendingUp,
+    title: "Crescimento",
+    description: "Aumente a sua carteira de clientes e projetos."
   }
+]
 
-  const texts = {
-    pt: {
-      title: "Junte-se a Nós",
-      subtitle: "Faça parte da rede LAT - Limarestas e expanda as suas oportunidades de negócio.",
-      selectCategory: "Selecione a sua categoria profissional",
-      whyJoin: "Porquê juntar-se à Limarestas?",
-      benefit1: "Acesso a novos projetos e clientes",
-      benefit2: "Rede de profissionais qualificados",
-      benefit3: "Suporte administrativo e comercial",
-      benefit4: "Visibilidade no mercado",
-      requirements: "Requisitos",
-      registerForm: "Formulário de Registo",
-      name: "Nome Completo / Empresa",
-      email: "Email",
-      phone: "Telefone",
-      nif: "NIF / NIPC",
-      experience: "Experiência e Qualificações",
-      documents: "Documentos (PDF)",
-      uploadDocs: "Carregar Documentos",
-      submit: "Submeter Candidatura",
-      successTitle: "Candidatura Enviada!",
-      successMsg: "Entraremos em contacto em breve para validar os seus dados.",
-      backToHome: "Voltar ao Início",
-    },
-    en: {
-      title: "Join Us",
-      subtitle: "Join the LAT - Limarestas network and expand your business opportunities.",
-      selectCategory: "Select your professional category",
-      whyJoin: "Why join Limarestas?",
-      benefit1: "Access to new projects and clients",
-      benefit2: "Network of qualified professionals",
-      benefit3: "Administrative and commercial support",
-      benefit4: "Market visibility",
-      requirements: "Requirements",
-      registerForm: "Registration Form",
-      name: "Full Name / Company",
-      email: "Email",
-      phone: "Phone",
-      nif: "Tax ID",
-      experience: "Experience and Qualifications",
-      documents: "Documents (PDF)",
-      uploadDocs: "Upload Documents",
-      submit: "Submit Application",
-      successTitle: "Application Sent!",
-      successMsg: "We will contact you soon to validate your data.",
-      backToHome: "Back to Home",
-    },
-    es: {
-      title: "Únete a Nosotros",
-      subtitle: "Forme parte de la red LAT - Limarestas y amplíe sus oportunidades de negocio.",
-      selectCategory: "Seleccione su categoría profesional",
-      whyJoin: "¿Por qué unirse a Limarestas?",
-      benefit1: "Acceso a nuevos proyectos y clientes",
-      benefit2: "Red de profesionales calificados",
-      benefit3: "Soporte administrativo y comercial",
-      benefit4: "Visibilidad en el mercado",
-      requirements: "Requisitos",
-      registerForm: "Formulario de Registro",
-      name: "Nombre Completo / Empresa",
-      email: "Email",
-      phone: "Teléfono",
-      nif: "NIF",
-      experience: "Experiencia y Calificaciones",
-      documents: "Documentos (PDF)",
-      uploadDocs: "Cargar Documentos",
-      submit: "Enviar Solicitud",
-      successTitle: "¡Solicitud Enviada!",
-      successMsg: "Nos pondremos en contacto pronto para validar sus datos.",
-      backToHome: "Volver al Inicio",
-    },
-  }
-
-  const txt = texts[language]
-
+export default function JunteSePage() {
   return (
     <main className="min-h-screen">
       <Header />
+      
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 md:pt-40 md:pb-32 bg-secondary/30">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="text-sm font-semibold text-accent uppercase tracking-wider">Junte-se a Nós</span>
+            <h1 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-serif font-medium leading-tight text-foreground text-balance">
+              Faça parte da rede Limarestas
+            </h1>
+            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
+              Conectamos profissionais qualificados com projetos de construção em todo o Portugal. 
+              Junte-se à nossa rede e expanda o seu negócio.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <section className="pt-32 pb-20 bg-secondary/30">
+      {/* Benefits Section */}
+      <section className="py-16 bg-background">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-8">
+            {benefits.map((benefit) => (
+              <div key={benefit.title} className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+                  <benefit.icon className="w-6 h-6 text-accent" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">{benefit.title}</h3>
+                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-20 bg-card">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-serif font-medium text-foreground mb-4">
-              {txt.title}
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {txt.subtitle}
+            <h2 className="text-3xl md:text-4xl font-serif font-medium text-foreground">
+              Categorias Profissionais
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+              Selecione a sua categoria e descubra como podemos ajudá-lo a crescer.
             </p>
           </div>
 
-          {!formSubmitted ? (
-            <>
-              {/* Benefits */}
-              <div className="mb-16">
-                <h2 className="text-2xl font-serif text-foreground text-center mb-8">{txt.whyJoin}</h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {[txt.benefit1, txt.benefit2, txt.benefit3, txt.benefit4].map((benefit, i) => (
-                    <div key={i} className="flex items-start gap-3 p-4 bg-background rounded-lg border border-border">
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground">{benefit}</span>
-                    </div>
-                  ))}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {professionCategories.map((category) => (
+              <Card key={category.title} className="hover:shadow-lg transition-shadow group">
+                <CardHeader>
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <category.icon className="w-7 h-7 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">{category.title}</CardTitle>
+                  <CardDescription>{category.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 mb-6">
+                    {category.benefits.map((benefit) => (
+                      <li key={benefit} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                        {benefit}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button className="w-full" variant="outline" asChild>
+                    <Link href="#contacto-profissional">
+                      Saber Mais
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form Section */}
+      <section id="contacto-profissional" className="py-20 bg-background">
+        <div className="mx-auto max-w-3xl px-6 lg:px-8">
+          <Card className="shadow-lg">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-serif">Registe o seu interesse</CardTitle>
+              <CardDescription>
+                Preencha o formulário e a nossa equipa entrará em contacto consigo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label htmlFor="nome" className="text-sm font-medium text-foreground">
+                      Nome Completo
+                    </label>
+                    <input
+                      id="nome"
+                      type="text"
+                      placeholder="O seu nome"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="empresa" className="text-sm font-medium text-foreground">
+                      Empresa
+                    </label>
+                    <input
+                      id="empresa"
+                      type="text"
+                      placeholder="Nome da empresa"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    />
+                  </div>
                 </div>
-              </div>
-
-              {/* Category Selection */}
-              <div className="mb-12">
-                <h2 className="text-xl font-semibold text-foreground text-center mb-8">{txt.selectCategory}</h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {categories.map((category) => {
-                    const isSelected = selectedCategory === category.key
-                    return (
-                      <Card
-                        key={category.key}
-                        className={`cursor-pointer transition-all hover:shadow-lg ${
-                          isSelected ? "border-primary ring-2 ring-primary/20" : "hover:border-primary/50"
-                        }`}
-                        onClick={() => setSelectedCategory(category.key)}
-                      >
-                        <CardHeader>
-                          <div className="flex items-center gap-3">
-                            <div className={`p-3 rounded-lg ${isSelected ? "bg-primary/10" : "bg-secondary"}`}>
-                              <category.icon className={`w-6 h-6 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
-                            </div>
-                            <div>
-                              <CardTitle className="text-lg">{t(category.key)}</CardTitle>
-                              <CardDescription>{category.description[language]}</CardDescription>
-                            </div>
-                          </div>
-                        </CardHeader>
-                        {isSelected && (
-                          <CardContent>
-                            <div className="space-y-2">
-                              <p className="text-sm font-medium text-foreground">{txt.requirements}:</p>
-                              <ul className="space-y-1">
-                                {category.requirements[language].map((req, i) => (
-                                  <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
-                                    <FileText className="w-3 h-3" />
-                                    {req}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </CardContent>
-                        )}
-                      </Card>
-                    )
-                  })}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium text-foreground">
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder="email@exemplo.com"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="telefone" className="text-sm font-medium text-foreground">
+                      Telefone
+                    </label>
+                    <input
+                      id="telefone"
+                      type="tel"
+                      placeholder="+351 000 000 000"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    />
+                  </div>
                 </div>
-              </div>
-
-              {/* Registration Form */}
-              {selectedCategory && (
-                <Card className="max-w-2xl mx-auto">
-                  <CardHeader>
-                    <CardTitle>{txt.registerForm}</CardTitle>
-                    <CardDescription>
-                      {t(selectedCategory)}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">{txt.name}</label>
-                          <Input placeholder={txt.name} required />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">{txt.email}</label>
-                          <Input type="email" placeholder="email@exemplo.com" required />
-                        </div>
-                      </div>
-
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">{txt.phone}</label>
-                          <Input type="tel" placeholder="+351 000 000 000" required />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">{txt.nif}</label>
-                          <Input placeholder="000000000" required />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-foreground">{txt.experience}</label>
-                        <Textarea
-                          placeholder={txt.experience}
-                          rows={4}
-                          className="resize-none"
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-foreground">{txt.documents}</label>
-                        <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                          <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                          <p className="text-sm text-muted-foreground">{txt.uploadDocs}</p>
-                          <p className="text-xs text-muted-foreground mt-1">PDF, max 10MB</p>
-                          <input type="file" className="hidden" accept=".pdf" multiple />
-                        </div>
-                      </div>
-
-                      <Button type="submit" size="lg" className="w-full">
-                        {txt.submit}
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
-              )}
-            </>
-          ) : (
-            <Card className="max-w-md mx-auto text-center">
-              <CardContent className="pt-8 pb-8">
-                <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle2 className="w-8 h-8 text-green-500" />
+                <div className="space-y-2">
+                  <label htmlFor="categoria" className="text-sm font-medium text-foreground">
+                    Categoria Profissional
+                  </label>
+                  <select
+                    id="categoria"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Selecione uma categoria</option>
+                    <option value="arquiteto">Arquiteto</option>
+                    <option value="engenheiro">Engenheiro</option>
+                    <option value="construtor">Construtor</option>
+                    <option value="empreiteiro">Empreiteiro</option>
+                    <option value="condominio">Condomínio</option>
+                    <option value="imobiliario">Imobiliário</option>
+                  </select>
                 </div>
-                <h2 className="text-2xl font-serif text-foreground mb-2">{txt.successTitle}</h2>
-                <p className="text-muted-foreground mb-6">{txt.successMsg}</p>
-                <Button asChild>
-                  <Link href="/">{txt.backToHome}</Link>
+                <div className="space-y-2">
+                  <label htmlFor="mensagem" className="text-sm font-medium text-foreground">
+                    Mensagem
+                  </label>
+                  <textarea
+                    id="mensagem"
+                    rows={4}
+                    placeholder="Descreva a sua experiência e áreas de atuação..."
+                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none"
+                  />
+                </div>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" size="lg">
+                  Enviar Candidatura
                 </Button>
-              </CardContent>
-            </Card>
-          )}
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </section>
 

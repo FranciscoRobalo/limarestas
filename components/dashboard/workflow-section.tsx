@@ -51,28 +51,28 @@ interface Etapa {
 const etapas: Etapa[] = [
   {
     id: 1,
-    nome: "Pedido de Informação",
-    descricao: "Receção e análise do pedido de informação do cliente",
+    nome: "Entrada de Obra",
+    descricao: "Registo inicial e recolha de informação do cliente",
     icon: FileText,
     tarefas: [
       {
         id: "1.1",
-        titulo: "Receber Pedido",
-        descricao: "Registar o pedido de informação do cliente",
+        titulo: "Informe a LAT",
+        descricao: "Notificar a equipa LAT sobre a nova obra",
         completada: false,
         pendente: false,
       },
       {
         id: "1.2",
-        titulo: "Analisar Requisitos",
-        descricao: "Avaliar as necessidades e requisitos do projeto",
+        titulo: "Informe o Cliente",
+        descricao: "Contactar o cliente para confirmar a receção da solicitação",
         completada: false,
         pendente: false,
       },
       {
         id: "1.3",
-        titulo: "Contactar Cliente",
-        descricao: "Confirmar receção e esclarecer dúvidas",
+        titulo: "Preencha o Inquérito",
+        descricao: "Completar o formulário de levantamento de necessidades",
         completada: false,
         pendente: false,
       },
@@ -80,57 +80,74 @@ const etapas: Etapa[] = [
   },
   {
     id: 2,
-    nome: "Visita",
-    descricao: "Agendamento e realização da visita técnica",
+    nome: "Gerir Visitas à Obra",
+    descricao: "Coordenação e acompanhamento das visitas técnicas",
     icon: Calendar,
     tarefas: [
       {
         id: "2.1",
-        titulo: "Agendar Visita",
-        descricao: "Marcar data e hora com o cliente",
+        titulo: "Informe o Cliente",
+        descricao: "Confirmar disponibilidade para visita técnica",
         completada: false,
         pendente: false,
       },
       {
         id: "2.2",
-        titulo: "Realizar Visita Técnica",
-        descricao: "Efetuar levantamento no local",
+        titulo: "Marque a(s) Visita(s) à Obra",
+        descricao: "Agendar data e hora com todas as partes",
         completada: false,
         pendente: false,
       },
       {
         id: "2.3",
-        titulo: "Documentar Visita",
-        descricao: "Registar observações e tirar fotografias",
+        titulo: "Acompanhe a Visita Técnica",
+        descricao: "Realizar a visita e documentar observações",
         completada: false,
         pendente: false,
+      },
+      {
+        id: "2.4",
+        titulo: "Aguardar por Relatório de Obra",
+        descricao: "Receber e validar o relatório técnico da visita",
+        completada: false,
+        pendente: true,
+        prazo: "Até 5 dias após a visita",
       },
     ],
   },
   {
     id: 3,
-    nome: "Orçamento",
-    descricao: "Elaboração e apresentação do orçamento",
+    nome: "Apresentar Orçamentos",
+    descricao: "Organização e apresentação de propostas aos clientes",
     icon: Euro,
     tarefas: [
       {
         id: "3.1",
-        titulo: "Solicitar Orçamentos",
-        descricao: "Contactar empreiteiros para obter propostas",
+        titulo: "Aguardar até Receber Orçamentos",
+        descricao: "Contactar empresas se não receber em 15 dias",
         completada: false,
-        pendente: false,
+        pendente: true,
+        prazo: "15 dias",
+        alertas: ["Caso não receba orçamentos em 15 dias, contactar a empresa"],
       },
       {
         id: "3.2",
-        titulo: "Compilar Propostas",
-        descricao: "Organizar e comparar orçamentos recebidos",
+        titulo: "Organize os Orçamentos",
+        descricao: "Compilar e comparar todas as propostas recebidas",
         completada: false,
         pendente: false,
       },
       {
         id: "3.3",
-        titulo: "Apresentar ao Cliente",
-        descricao: "Enviar orçamentos ao cliente para análise",
+        titulo: "Apresente as Propostas",
+        descricao: "Preparar apresentação para o cliente",
+        completada: false,
+        pendente: false,
+      },
+      {
+        id: "3.4",
+        titulo: "Envie ao Cliente",
+        descricao: "Enviar orçamentos e aguardar feedback",
         completada: false,
         pendente: false,
       },
@@ -138,66 +155,76 @@ const etapas: Etapa[] = [
   },
   {
     id: 4,
-    nome: "Estado do Orçamento",
-    descricao: "Acompanhamento da decisão do cliente",
+    nome: "Confirmar a Adjudicação",
+    descricao: "Validação da decisão do cliente e contratação",
     icon: CheckCircle2,
     tarefas: [
       {
         id: "4.1",
-        titulo: "Aguardar Decisão",
-        descricao: "Acompanhar feedback do cliente sobre o orçamento",
+        titulo: "Aguardar até Receber Feedback",
+        descricao: "Contactar o cliente após 1 semana sem resposta",
         completada: false,
         pendente: true,
         prazo: "1 semana",
+        alertas: ["Caso não receba feedback em 1 semana, contactar o cliente"],
       },
       {
         id: "4.2",
-        titulo: "Registar Estado",
-        descricao: "Aceite / Recusado / Negociado",
+        titulo: "Confirme os Dados",
+        descricao: "Validar toda a informação da adjudicação",
         completada: false,
         pendente: false,
+      },
+      {
+        id: "4.3",
+        titulo: "Aguardar Comprovativo de Adjudicação",
+        descricao: "Receber documentação formal da contratação",
+        completada: false,
+        pendente: true,
+        alertas: ["Reforçar pedido caso não receba comprovativo"],
       },
     ],
   },
   {
     id: 5,
-    nome: "Adjudicação / Comissão Paga",
-    descricao: "Formalização da adjudicação e pagamento de comissão",
+    nome: "Pedido de Pagamento",
+    descricao: "Solicitação e gestão de comissões",
     icon: Euro,
     tarefas: [
       {
         id: "5.1",
-        titulo: "Confirmar Adjudicação",
-        descricao: "Receber confirmação formal do cliente",
+        titulo: "Peça a Sua Comissão",
+        descricao: "Submeter pedido de pagamento de comissão",
         completada: false,
         pendente: false,
       },
       {
         id: "5.2",
-        titulo: "Processar Comissão",
-        descricao: "Solicitar e confirmar pagamento de comissão",
+        titulo: "Aguardar Comprovativo de Pagamento",
+        descricao: "Confirmar receção do pagamento",
         completada: false,
-        pendente: false,
+        pendente: true,
+        alertas: ["Reforçar pedido caso não receba comprovativo"],
       },
     ],
   },
   {
     id: 6,
-    nome: "Obra Concluída",
-    descricao: "Finalização da obra e agradecimento ao cliente",
+    nome: "Encerrar Consultoria",
+    descricao: "Finalização do processo e agradecimento",
     icon: CheckCircle2,
     tarefas: [
       {
         id: "6.1",
-        titulo: "Confirmar Conclusão",
-        descricao: "Validar que a obra foi concluída com sucesso",
+        titulo: "Aguardar Comprovativo Final",
+        descricao: "Confirmar conclusão de todos os pagamentos",
         completada: false,
-        pendente: false,
+        pendente: true,
       },
       {
         id: "6.2",
-        titulo: "Agradecer ao Cliente",
-        descricao: "Enviar mensagem de agradecimento",
+        titulo: "Agradeça ao Cliente",
+        descricao: "Enviar mensagem de agradecimento e solicitar feedback",
         completada: false,
         pendente: false,
       },
@@ -472,16 +499,17 @@ export function WorkflowSection() {
       {etapaSelecionada === 6 && (
         <Card className="bg-green-500/10 border-green-500/30">
           <CardContent className="pt-6">
-              <div className="text-center space-y-4">
+            <div className="text-center space-y-4">
               <div className="inline-flex p-4 bg-green-500/20 rounded-full">
                 <CheckCircle2 className="w-12 h-12 text-green-600" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-green-800 dark:text-green-200 mb-2">
-                  Obra Concluída com Sucesso!
+                  Parabéns pelo Seu Trabalho!
                 </h3>
                 <p className="text-green-700 dark:text-green-300">
-                  Obrigado por trabalhar connosco.
+                  Obrigado por todo o empenho na gestão desta obra. A sua dedicação é fundamental para o sucesso dos
+                  nossos projetos.
                 </p>
               </div>
             </div>
