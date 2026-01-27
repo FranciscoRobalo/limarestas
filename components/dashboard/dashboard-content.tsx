@@ -16,6 +16,7 @@ import { AnalyticsSection } from "./analytics-section"
 import { InvoicesSection } from "./invoices-section"
 import { CalendarSection } from "./calendar-section"
 import { FeedbackSection } from "./feedback-section"
+import { ObrasConcluídasSection } from "./obras-concluidas-section"
 
 export function DashboardContent() {
   const searchParams = useSearchParams()
@@ -34,10 +35,14 @@ export function DashboardContent() {
     return <WorkflowSection />
   }
 
-  if (tab === "validacao" && user?.role === "admin") {
-    return <ValidacaoSection />
+if (tab === "validacao" && user?.role === "admin") {
+  return <ValidacaoSection />
   }
-
+  
+  if (tab === "obras-concluidas" && (user?.role === "admin" || user?.role === "tecnico")) {
+  return <ObrasConcluídasSection />
+  }
+  
   if (tab === "visitas-agendadas" && user?.role === "public") {
     return <VisitasAgendadasSection />
   }

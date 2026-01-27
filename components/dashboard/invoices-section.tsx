@@ -42,48 +42,53 @@ interface Invoice {
   status: "rascunho" | "enviada" | "paga" | "vencida"
   dueDate: string
   createdAt: string
-}
+  tipoDestinatario: "cliente" | "empreiteiro" | "mediador"
+  }
 
 const mockInvoices: Invoice[] = [
   {
-    id: "1",
-    number: "FAT-2024-001",
-    client: "Maria Santos",
-    obra: "Moradia T4 Cascais",
-    amount: 15000,
-    status: "paga",
-    dueDate: "2024-01-15",
-    createdAt: "2024-01-01",
+  id: "1",
+  number: "FAT-2024-001",
+  client: "Maria Santos",
+  obra: "Moradia T4 Cascais",
+  amount: 15000,
+  status: "paga",
+  dueDate: "2024-01-15",
+  createdAt: "2024-01-01",
+  tipoDestinatario: "cliente",
   },
   {
     id: "2",
     number: "FAT-2024-002",
-    client: "João Ferreira",
-    obra: "Remodelação Escritório",
-    amount: 8500,
-    status: "enviada",
-    dueDate: "2024-02-28",
-    createdAt: "2024-02-14",
+client: "João Ferreira",
+  obra: "Remodelação Escritório",
+  amount: 8500,
+  status: "enviada",
+  dueDate: "2024-02-28",
+  createdAt: "2024-02-14",
+  tipoDestinatario: "empreiteiro",
   },
   {
-    id: "3",
-    number: "FAT-2024-003",
-    client: "Ana Rodrigues",
-    obra: "Cozinha e WC",
-    amount: 4200,
-    status: "vencida",
-    dueDate: "2024-01-30",
-    createdAt: "2024-01-16",
+  id: "3",
+  number: "FAT-2024-003",
+client: "Ana Rodrigues",
+  obra: "Cozinha e WC",
+  amount: 4200,
+  status: "vencida",
+  dueDate: "2024-01-30",
+  createdAt: "2024-01-16",
+  tipoDestinatario: "cliente",
   },
   {
-    id: "4",
-    number: "FAT-2024-004",
-    client: "Pedro Costa",
-    obra: "Reabilitação Edifício",
-    amount: 45000,
-    status: "rascunho",
-    dueDate: "2024-03-15",
-    createdAt: "2024-02-20",
+  id: "4",
+  number: "FAT-2024-004",
+  client: "Pedro Costa",
+  obra: "Reabilitação Edifício",
+  amount: 45000,
+  status: "rascunho",
+  dueDate: "2024-03-15",
+  createdAt: "2024-02-20",
+  tipoDestinatario: "mediador",
   },
 ]
 
@@ -92,12 +97,13 @@ export function InvoicesSection() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [newInvoice, setNewInvoice] = useState({
-    client: "",
-    obra: "",
-    amount: "",
-    dueDate: "",
-    description: "",
+const [newInvoice, setNewInvoice] = useState({
+  client: "",
+  obra: "",
+  amount: "",
+  dueDate: "",
+  description: "",
+  tipoDestinatario: "cliente" as "cliente" | "empreiteiro" | "mediador",
   })
 
   const filteredInvoices = invoices.filter((invoice) => {
@@ -145,20 +151,21 @@ export function InvoicesSection() {
   const totalPending = invoices.filter((i) => i.status === "enviada").reduce((sum, i) => sum + i.amount, 0)
   const totalOverdue = invoices.filter((i) => i.status === "vencida").reduce((sum, i) => sum + i.amount, 0)
 
-  const handleCreateInvoice = () => {
-    const invoice: Invoice = {
-      id: Date.now().toString(),
-      number: `FAT-2024-${String(invoices.length + 1).padStart(3, "0")}`,
-      client: newInvoice.client,
-      obra: newInvoice.obra,
-      amount: Number.parseFloat(newInvoice.amount),
-      status: "rascunho",
-      dueDate: newInvoice.dueDate,
-      createdAt: new Date().toISOString().split("T")[0],
-    }
-    setInvoices([invoice, ...invoices])
-    setNewInvoice({ client: "", obra: "", amount: "", dueDate: "", description: "" })
-    setIsCreateOpen(false)
+const handleCreateInvoice = () => {
+  const invoice: Invoice = {
+  id: Date.now().toString(),
+  number: `FAT-2024-${String(invoices.length + 1).padStart(3, "0")}`,
+  client: newInvoice.client,
+  obra: newInvoice.obra,
+  amount: Number.parseFloat(newInvoice.amount),
+  status: "rascunho",
+  dueDate: newInvoice.dueDate,
+  createdAt: new Date().toISOString().split("T")[0],
+  tipoDestinatario: newInvoice.tipoDestinatario,
+  }
+  setInvoices([invoice, ...invoices])
+  setNewInvoice({ client: "", obra: "", amount: "", dueDate: "", description: "", tipoDestinatario: "cliente" })
+  setIsCreateOpen(false)
   }
 
   return (
@@ -179,23 +186,41 @@ export function InvoicesSection() {
               <DialogTitle>Criar Nova Fatura</DialogTitle>
               <DialogDescription>Preencha os dados da fatura</DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label>Cliente</Label>
-                <Input
-                  value={newInvoice.client}
-                  onChange={(e) => setNewInvoice({ ...newInvoice, client: e.target.value })}
-                  placeholder="Nome do cliente"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Obra</Label>
-                <Input
-                  value={newInvoice.obra}
-                  onChange={(e) => setNewInvoice({ ...newInvoice, obra: e.target.value })}
-                  placeholder="Nome da obra"
-                />
-              </div>
+<div className="space-y-4 py-4">
+  <div className="space-y-2">
+  <Label>Tipo de Destinatário</Label>
+  <Select 
+  value={newInvoice.tipoDestinatario} 
+  onValueChange={(value: "cliente" | "empreiteiro" | "mediador") => 
+    setNewInvoice({ ...newInvoice, tipoDestinatario: value })
+  }
+  >
+  <SelectTrigger>
+  <SelectValue placeholder="Selecione o tipo" />
+  </SelectTrigger>
+  <SelectContent>
+  <SelectItem value="cliente">Cliente</SelectItem>
+  <SelectItem value="empreiteiro">Empreiteiro</SelectItem>
+  <SelectItem value="mediador">Mediador</SelectItem>
+  </SelectContent>
+  </Select>
+  </div>
+  <div className="space-y-2">
+  <Label>Nome do {newInvoice.tipoDestinatario === "cliente" ? "Cliente" : newInvoice.tipoDestinatario === "empreiteiro" ? "Empreiteiro" : "Mediador"}</Label>
+  <Input
+  value={newInvoice.client}
+  onChange={(e) => setNewInvoice({ ...newInvoice, client: e.target.value })}
+  placeholder={`Nome do ${newInvoice.tipoDestinatario}`}
+  />
+  </div>
+  <div className="space-y-2">
+  <Label>Obra</Label>
+  <Input
+  value={newInvoice.obra}
+  onChange={(e) => setNewInvoice({ ...newInvoice, obra: e.target.value })}
+  placeholder="Nome da obra"
+  />
+  </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Valor (EUR)</Label>

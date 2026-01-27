@@ -53,6 +53,13 @@ const navigation: NavItem[] = [
   { name: "Gestão de Obras", href: "/dashboard?tab=workflow", icon: GitBranch, id: "workflow", roles: ["admin"] },
   { name: "Aprovação de Orçamentos", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao", roles: ["admin"] },
   {
+    name: "Obras Concluídas",
+    href: "/dashboard?tab=obras-concluidas",
+    icon: Building2,
+    id: "obras-concluidas",
+    roles: ["admin", "tecnico"],
+  },
+  {
     name: "Visitas Agendadas",
     href: "/dashboard?tab=visitas-agendadas",
     icon: CalendarCheck,
@@ -218,7 +225,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Menu className="w-6 h-6" />
             </button>
             <h1 className="text-lg font-semibold text-foreground lg:text-xl">
-              {user?.role === "admin" ? "Painel Administrativo" : user?.role === "tecnico" ? "Painel Técnico" : "Painel de Gestão"}
+              {user?.role === "admin" ? "Painel Administrativo" : user?.role === "tecnico" ? "Painel Técnico" : "Painel"}
             </h1>
             <div className="w-6 lg:hidden" />
           </div>
