@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { DM_Sans, Playfair_Display } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/contexts/auth-context"
+import { LanguageProvider } from "@/contexts/language-context"
 import "./globals.css"
 
 const dmSans = DM_Sans({
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   description:
     "Encontramos a equipa certa para qualquer projeto de construção. Contactamos empresas validadas e ajudamos a comparar orçamentos.",
   keywords: ["construção", "remodelação", "Portugal", "arquitetura", "paisagismo"],
-    generator: 'v0.app'
+  generator: "v0.app",
 }
 
 export default function RootLayout({
@@ -31,7 +32,9 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <body className={`${dmSans.variable} ${playfair.variable} font-sans antialiased`}>
-        <AuthProvider>{children}</AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </LanguageProvider>
         <Analytics />
       </body>
     </html>
