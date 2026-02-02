@@ -1,21 +1,25 @@
+"use client"
+
 import Link from "next/link"
 import { Facebook, Instagram, Linkedin } from "lucide-react"
+import { useLanguage } from "@/contexts/language-context"
 
-const navigation = {
-  main: [
-    { name: "Início", href: "#inicio" },
-    { name: "Sobre", href: "#sobre" },
-    { name: "Serviços", href: "#servicos" },
-    { name: "Contacto", href: "#contacto" },
-  ],
-  social: [
-    { name: "Facebook", href: "#", icon: Facebook },
-    { name: "Instagram", href: "#", icon: Instagram },
-    { name: "LinkedIn", href: "#", icon: Linkedin },
-  ],
-}
+const socialLinks = [
+  { name: "Facebook", href: "#", icon: Facebook },
+  { name: "Instagram", href: "#", icon: Instagram },
+  { name: "LinkedIn", href: "#", icon: Linkedin },
+]
 
 export function Footer() {
+  const { t } = useLanguage()
+
+  const navigation = [
+    { name: t("nav.inicio"), href: "#inicio" },
+    { name: t("nav.sobre"), href: "#sobre" },
+    { name: t("nav.servicos"), href: "#servicos" },
+    { name: t("nav.contacto"), href: "#contacto" },
+  ]
+
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
@@ -28,7 +32,7 @@ export function Footer() {
           </div>
 
           <nav className="flex flex-wrap gap-6">
-            {navigation.main.map((item) => (
+            {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
@@ -40,7 +44,7 @@ export function Footer() {
           </nav>
 
           <div className="flex gap-4">
-            {navigation.social.map((item) => (
+            {socialLinks.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
@@ -56,14 +60,14 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-primary-foreground/10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <p className="text-sm text-primary-foreground/60">
-              © {new Date().getFullYear()} LAT - Limarestas. Todos os direitos reservados.
+              {new Date().getFullYear()} LAT - Limarestas. {t("footer.rights")}.
             </p>
             <div className="flex gap-6 text-sm text-primary-foreground/60">
               <Link href="#" className="hover:text-primary-foreground transition-colors">
-                Política de Privacidade
+                {t("footer.privacy")}
               </Link>
               <Link href="#" className="hover:text-primary-foreground transition-colors">
-                Termos de Uso
+                {t("footer.terms")}
               </Link>
             </div>
           </div>

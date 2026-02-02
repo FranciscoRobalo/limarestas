@@ -1,36 +1,53 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-const services = [
-  {
-    title: "Construção",
-    description: "Desde casas novas a ampliações, encontramos construtores de confiança para o seu projeto.",
-    image: "/modern-house-construction-site-professional-worker.jpg",
-    href: "#",
-  },
-  {
-    title: "Arquitetura",
-    description: "Conectamos-o com arquitetos que dão vida à sua visão, com design funcional e estético.",
-    image: "/architectural-blueprints-modern-building-design.jpg",
-    href: "#",
-  },
-  {
-    title: "Paisagismo e Espaços Exteriores",
-    description: "Jardins, piscinas e espaços exteriores que complementam perfeitamente a sua propriedade.",
-    image: "/beautiful-landscaped-garden-with-pool-modern-desig.jpg",
-    href: "#",
-  },
-]
+import { useLanguage } from "@/contexts/language-context"
 
 export function ServicesSection() {
+  const { t, language } = useLanguage()
+
+  const services = [
+    {
+      title: language === "pt" ? "Construcao" : language === "en" ? "Construction" : "Construccion",
+      description: language === "pt" 
+        ? "Desde casas novas a ampliacoes, encontramos construtores de confianca para o seu projeto."
+        : language === "en"
+        ? "From new homes to extensions, we find reliable builders for your project."
+        : "Desde casas nuevas hasta ampliaciones, encontramos constructores de confianza para su proyecto.",
+      image: "/modern-house-construction-site-professional-worker.jpg",
+      href: "#",
+    },
+    {
+      title: language === "pt" ? "Arquitetura" : language === "en" ? "Architecture" : "Arquitectura",
+      description: language === "pt"
+        ? "Conectamos-o com arquitetos que dao vida a sua visao, com design funcional e estetico."
+        : language === "en"
+        ? "We connect you with architects who bring your vision to life, with functional and aesthetic design."
+        : "Le conectamos con arquitectos que dan vida a su vision, con diseno funcional y estetico.",
+      image: "/architectural-blueprints-modern-building-design.jpg",
+      href: "#",
+    },
+    {
+      title: language === "pt" ? "Paisagismo e Espacos Exteriores" : language === "en" ? "Landscaping and Outdoor Spaces" : "Paisajismo y Espacios Exteriores",
+      description: language === "pt"
+        ? "Jardins, piscinas e espacos exteriores que complementam perfeitamente a sua propriedade."
+        : language === "en"
+        ? "Gardens, pools and outdoor spaces that perfectly complement your property."
+        : "Jardines, piscinas y espacios exteriores que complementan perfectamente su propiedad.",
+      image: "/beautiful-landscaped-garden-with-pool-modern-desig.jpg",
+      href: "#",
+    },
+  ]
+
   return (
     <section id="servicos" className="py-20 md:py-32 bg-primary text-primary-foreground">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
           <div>
-            <span className="text-sm font-semibold text-accent uppercase tracking-wider">O que fazemos</span>
-            <h2 className="mt-4 text-3xl md:text-4xl font-serif font-medium">Os nossos serviços incluem</h2>
+            <span className="text-sm font-semibold text-accent uppercase tracking-wider">{t("services.label")}</span>
+            <h2 className="mt-4 text-3xl md:text-4xl font-serif font-medium">{t("services.title")}</h2>
           </div>
           <Button
             asChild

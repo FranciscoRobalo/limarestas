@@ -1,17 +1,23 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, User } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, User, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useVisitas } from "@/hooks/use-visitas"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
+const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]
 const MONTHS = [
   "Janeiro",
   "Fevereiro",
-  "Março",
+  "Marco",
   "Abril",
   "Maio",
   "Junho",
@@ -33,29 +39,64 @@ interface CalendarEvent {
   client?: string
 }
 
-const mockEvents: CalendarEvent[] = [
-  {
-    id: "1",
-    title: "Visita Técnica - Cascais",
-    date: "2024-02-15",
-    time: "10:00",
-    type: "visita",
-    location: "Cascais",
-    client: "Maria Santos",
-  },
-  { id: "2", title: "Reunião Orçamento", date: "2024-02-15", time: "14:00", type: "reuniao", client: "João Ferreira" },
-  { id: "3", title: "Entrega Projeto", date: "2024-02-18", time: "09:00", type: "entrega", client: "Ana Rodrigues" },
-  { id: "4", title: "Prazo Orçamento", date: "2024-02-20", time: "18:00", type: "prazo" },
-  {
-    id: "5",
-    title: "Visita Obra Porto",
-    date: "2024-02-22",
-    time: "11:00",
-    type: "visita",
-    location: "Porto",
-    client: "Pedro Costa",
-  },
-]
+// Generate dynamic mock events based on current date
+const generateMockEvents = (): CalendarEvent[] => {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = today.getMonth()
+  
+  const formatDate = (day: number) => {
+    const m = String(month + 1).padStart(2, "0")
+    const d = String(day).padStart(2, "0")
+    return `${year}-${m}-${d}`
+  }
+
+  return [
+    {
+      id: "1",
+      title: "Visita Tecnica - Cascais",
+      date: formatDate(today.getDate() + 1),
+      time: "10:00",
+      type: "visita",
+      location: "Cascais",
+      client: "Maria Santos",
+    },
+    { 
+      id: "2", 
+      title: "Reuniao Orcamento", 
+      date: formatDate(today.getDate() + 1), 
+      time: "14:00", 
+      type: "reuniao", 
+      client: "Joao Ferreira" 
+    },
+    { 
+      id: "3", 
+      title: "Entrega Projeto", 
+      date: formatDate(today.getDate() + 3), 
+      time: "09:00", 
+      type: "entrega", 
+      client: "Ana Rodrigues" 
+    },
+    { 
+      id: "4", 
+      title: "Prazo Orcamento", 
+      date: formatDate(today.getDate() + 5), 
+      time: "18:00", 
+      type: "prazo" 
+    },
+    {
+      id: "5",
+      title: "Visita Obra Porto",
+      date: formatDate(today.getDate() + 7),
+      time: "11:00",
+      type: "visita",
+      location: "Porto",
+      client: "Pedro Costa",
+    },
+  ]
+}
+
+const mockEvents: CalendarEvent[] = generateMockEvents()
 
 export function CalendarSection() {
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -160,6 +201,24 @@ export function CalendarSection() {
           <Button variant="outline" onClick={goToToday}>
             Hoje
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <Share2 className="w-4 h-4 mr-2" /> Partilhar
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => alert("Calendario partilhado com Tecnicos")}>
+                Partilhar com Tecnicos
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => alert("Calendario partilhado com Clientes")}>
+                Partilhar com Clientes
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => alert("Calendario partilhado com Empreiteiros")}>
+                Partilhar com Empreiteiros
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <Plus className="w-4 h-4 mr-2" /> Novo Evento
           </Button>
