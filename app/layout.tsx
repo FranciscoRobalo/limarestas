@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { DM_Sans, Playfair_Display } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/contexts/auth-context"
+import { LanguageProvider } from "@/contexts/language-context"
 import "./globals.css"
 
 const dmSans = DM_Sans({
@@ -31,7 +32,9 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <body className={`${dmSans.variable} ${playfair.variable} font-sans antialiased`}>
-        <AuthProvider>{children}</AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </LanguageProvider>
         <Analytics />
       </body>
     </html>

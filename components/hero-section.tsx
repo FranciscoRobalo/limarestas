@@ -1,8 +1,13 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import { useLanguage } from "@/contexts/language-context"
 
 export function HeroSection() {
+  const { t } = useLanguage()
+
   return (
     <section id="inicio" className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
       {/* Background decoration */}
@@ -12,15 +17,15 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="space-y-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium leading-tight text-foreground text-balance">
-              Encontramos a equipa certa para qualquer projeto de construção.
+              {t("hero.title")}
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl">
-              O projeto é seu, o trabalho é nosso.
+              {t("hero.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link href="#contacto">
-                  Fale connosco
+                  {t("hero.cta_primary")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -30,7 +35,7 @@ export function HeroSection() {
                 variant="outline"
                 className="border-primary text-primary hover:bg-primary/5 bg-transparent"
               >
-                <Link href="#contacto">Contacte-nos</Link>
+                <Link href="#contacto">{t("hero.cta_secondary")}</Link>
               </Button>
             </div>
           </div>

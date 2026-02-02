@@ -66,8 +66,8 @@ export function DocumentsSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-serif text-foreground mb-2">Documentos</h2>
-        <p className="text-muted-foreground">Carregue e gira os documentos do seu projeto.</p>
+        <h2 className="text-2xl font-serif text-foreground mb-2">Consulta de Contas</h2>
+        <p className="text-muted-foreground">Consulte faturas, recibos e documentos financeiros do seu projeto.</p>
       </div>
 
       {/* Upload area */}

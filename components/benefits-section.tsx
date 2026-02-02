@@ -1,35 +1,40 @@
-import { Users, Clock, Target, Shield } from "lucide-react"
+"use client"
 
-const benefits = [
-  {
-    icon: Users,
-    title: "Acompanhamento personalizado",
-    description: "Recebe orientação desde o primeiro passo — adaptada ao seu projeto e às suas dúvidas.",
-  },
-  {
-    icon: Clock,
-    title: "Ganhe tempo",
-    description: "Não precisa pedir orçamentos a várias empresas — nós tratamos disso por si.",
-  },
-  {
-    icon: Target,
-    title: "Contactos certos, soluções certas",
-    description: "Ligamos o seu projeto às empresas mais adequadas, com base no que realmente precisa.",
-  },
-  {
-    icon: Shield,
-    title: "Menos stress, mais confiança",
-    description: "Tome decisões com clareza, sabendo que está a comparar opções fiáveis e bem explicadas.",
-  },
-]
+import { Users, Clock, Target, Shield } from "lucide-react"
+import { useLanguage } from "@/contexts/language-context"
 
 export function BenefitsSection() {
+  const { t } = useLanguage()
+
+  const benefits = [
+    {
+      icon: Users,
+      title: t("benefits.validated_companies"),
+      description: t("benefits.validated_companies_desc"),
+    },
+    {
+      icon: Clock,
+      title: t("benefits.quick_quotes"),
+      description: t("benefits.quick_quotes_desc"),
+    },
+    {
+      icon: Target,
+      title: t("benefits.support"),
+      description: t("benefits.support_desc"),
+    },
+    {
+      icon: Shield,
+      title: t("benefits.security"),
+      description: t("benefits.security_desc"),
+    },
+  ]
+
   return (
     <section className="py-20 md:py-32 bg-background">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="text-sm font-semibold text-accent uppercase tracking-wider">Porquê a Limarestas</span>
-          <h2 className="mt-4 text-3xl md:text-4xl font-serif font-medium text-foreground">Os nossos compromissos</h2>
+          <span className="text-sm font-semibold text-accent uppercase tracking-wider">{t("benefits.label")}</span>
+          <h2 className="mt-4 text-3xl md:text-4xl font-serif font-medium text-foreground">{t("benefits.title")}</h2>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">

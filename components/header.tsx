@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Menu, X, User, LogOut, Globe } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
+import { useLanguage } from "@/contexts/language-context"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,26 +14,26 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const languages = [
-  { code: "pt", name: "Português", flag: "PT" },
-  { code: "en", name: "English", flag: "EN" },
-  { code: "es", name: "Español", flag: "ES" },
-]
-
-const navigation = [
-  { name: "Início", href: "#inicio" },
-  { name: "Sobre", href: "#sobre" },
-  { name: "Serviços", href: "#servicos" },
-  { name: "Portfólio", href: "#portfolio" },
-  { name: "Calculadora", href: "#calculadora" },
-  { name: "Contacto", href: "#contacto" },
-  { name: "Equipa", href: "/junte-se" },
-  { name: "FAQ", href: "#faq" },
+  { code: "pt" as const, name: "Português", flag: "PT" },
+  { code: "en" as const, name: "English", flag: "EN" },
+  { code: "es" as const, name: "Español", flag: "ES" },
 ]
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [currentLanguage, setCurrentLanguage] = useState("pt")
   const { isAuthenticated, user, logout } = useAuth()
+  const { language, setLanguage, t } = useLanguage()
+
+  const navigation = [
+    { name: t("nav.inicio"), href: "#inicio" },
+    { name: t("nav.sobre"), href: "#sobre" },
+    { name: t("nav.servicos"), href: "#servicos" },
+    { name: t("nav.portfolio"), href: "#portfolio" },
+    { name: t("nav.calculadora"), href: "#calculadora" },
+    { name: t("nav.contacto"), href: "#contacto" },
+    { name: t("nav.equipa"), href: "/junte-se" },
+    { name: t("nav.faq"), href: "#faq" },
+  ]
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
@@ -61,15 +62,15 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="gap-2">
                 <Globe className="w-4 h-4" />
-                <span className="text-xs font-semibold">{languages.find(l => l.code === currentLanguage)?.flag}</span>
+                <span className="text-xs font-semibold">{languages.find(l => l.code === language)?.flag}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {languages.map((lang) => (
                 <DropdownMenuItem
                   key={lang.code}
-                  onClick={() => setCurrentLanguage(lang.code)}
-                  className={currentLanguage === lang.code ? "bg-accent" : ""}
+                  onClick={() => setLanguage(lang.code)}
+                  className={language === lang.code ? "bg-accent" : ""}
                 >
                   <span className="font-semibold mr-2">{lang.flag}</span>
                   {lang.name}
@@ -98,10 +99,10 @@ export function Header() {
           ) : (
             <div className="flex items-center gap-3 ml-2">
               <Button asChild variant="outline">
-                <Link href="/login">Entrar</Link>
+                <Link href="/login">{t("nav.entrar")}</Link>
               </Button>
               <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="#contacto">Fale connosco</Link>
+                <Link href="#contacto">{t("nav.fale_connosco")}</Link>
               </Button>
             </div>
           )}
@@ -135,14 +136,14 @@ export function Header() {
             {/* Mobile Language Switcher */}
             <div className="flex items-center gap-2 pt-2 border-t border-border">
               <Globe className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Idioma:</span>
+              <span className="text-sm text-muted-foreground">{t("nav.idioma")}:</span>
               <div className="flex gap-2">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
-                    onClick={() => setCurrentLanguage(lang.code)}
+                    onClick={() => setLanguage(lang.code)}
                     className={`px-2 py-1 text-xs font-semibold rounded ${
-                      currentLanguage === lang.code 
+                      language === lang.code 
                         ? "bg-primary text-primary-foreground" 
                         : "bg-muted text-muted-foreground hover:bg-accent"
                     }`}
@@ -170,19 +171,19 @@ export function Header() {
                   }}
                 >
                   <LogOut className="w-4 h-4 mr-2" />
-                  Terminar sessão
+                  {t("nav.terminar_sessao")}
                 </Button>
               </div>
             ) : (
               <div className="space-y-2 pt-4 border-t border-border">
                 <Button asChild variant="outline" className="w-full bg-transparent">
                   <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                    Entrar
+                    {t("nav.entrar")}
                   </Link>
                 </Button>
                 <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
                   <Link href="#contacto" onClick={() => setMobileMenuOpen(false)}>
-                    Fale connosco
+                    {t("nav.fale_connosco")}
                   </Link>
                 </Button>
               </div>
