@@ -10,6 +10,7 @@ import { TestimonialsSection } from "@/components/testimonials-section"
 import { FAQSection } from "@/components/faq-section"
 import { PartnersSection } from "@/components/partners-section"
 import { ContactSection } from "@/components/contact-section"
+import { TeamSection } from "@/components/team-section"
 import { Footer } from "@/components/footer"
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
       <StatsSection />
       <BenefitsSection />
       <ServicesSection />
+      <TeamSection />
       <ContactSection />
       <PortfolioSection />
       <BudgetCalculator />

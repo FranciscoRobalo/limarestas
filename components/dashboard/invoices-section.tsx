@@ -350,15 +350,60 @@ const handleCreateInvoice = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => alert(`Detalhes da fatura ${invoice.number}\n\nCliente: ${invoice.client}\nObra: ${invoice.obra}\nValor: ${formatCurrency(invoice.amount)}\nEstado: ${invoice.status}`)}>
                           <Eye className="w-4 h-4 mr-2" /> Ver
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          const emailSubject = encodeURIComponent(`Fatura ${invoice.number} - Limarestas`)
+                          const emailBody = encodeURIComponent(
+                            `Exmo(a). Sr(a). ${invoice.client},\n\n` +
+                            `Segue em anexo a fatura ${invoice.number} relativa à obra "${invoice.obra}".\n\n` +
+                            `Valor: ${formatCurrency(invoice.amount)}\n` +
+                            `Data de vencimento: ${new Date(invoice.dueDate).toLocaleDateString("pt-PT")}\n\n` +
+                            `Com os melhores cumprimentos,\n` +
+                            `Equipa Limarestas`
+                          )
+                          window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank')
+                          setInvoices(prev => prev.map(i => i.id === invoice.id ? { ...i, status: "enviada" as const } : i))
+                        }}>
                           <Send className="w-4 h-4 mr-2" /> Enviar
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Download className="w-4 h-4 mr-2" /> Download PDF
+                        <DropdownMenuItem onClick={() => {
+                          // Generate PDF content
+                          const pdfContent = `
+FATURA
+------
+Número: ${invoice.number}
+Data: ${new Date(invoice.createdAt).toLocaleDateString("pt-PT")}
+Vencimento: ${new Date(invoice.dueDate).toLocaleDateString("pt-PT")}
+
+CLIENTE
+-------
+${invoice.client}
+
+OBRA
+----
+${invoice.obra}
+
+TOTAL: ${formatCurrency(invoice.amount)}
+                          `
+                          const blob = new Blob([pdfContent], { type: 'text/plain' })
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = `${invoice.number}.txt`
+                          a.click()
+                          URL.revokeObjectURL(url)
+                        }}>
+                          <Download className="w-4 h-4 mr-2" /> Download
                         </DropdownMenuItem>
+                        {invoice.status === "enviada" && (
+                          <DropdownMenuItem onClick={() => {
+                            setInvoices(prev => prev.map(i => i.id === invoice.id ? { ...i, status: "paga" as const } : i))
+                          }}>
+                            <CheckCircle className="w-4 h-4 mr-2" /> Marcar como Paga
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

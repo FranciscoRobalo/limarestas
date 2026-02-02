@@ -1,6 +1,7 @@
 "use client"
 
-import { Mail, Phone, MapPin } from "lucide-react"
+import { useState } from "react"
+import { Mail, Phone, MapPin, CheckCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,6 +9,58 @@ import { useLanguage } from "@/contexts/language-context"
 
 export function ContactSection() {
   const { t } = useLanguage()
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    project: "",
+    message: "",
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    // Create WhatsApp message with form data
+    const whatsappMessage = encodeURIComponent(
+      `*Nova Mensagem do Website Limarestas*\n\n` +
+      `*Nome:* ${formData.name}\n` +
+      `*Email:* ${formData.email}\n` +
+      `*Telefone:* ${formData.phone}\n` +
+      `*Tipo de Projeto:* ${formData.project}\n` +
+      `*Mensagem:* ${formData.message}`
+    )
+
+    // Simulate a small delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    // Open WhatsApp with pre-filled message
+    window.open(`https://wa.me/351910118134?text=${whatsappMessage}`, '_blank')
+
+    setIsSubmitting(false)
+    setIsSubmitted(true)
+
+    // Reset form after 3 seconds
+    setTimeout(() => {
+      setIsSubmitted(false)
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        project: "",
+        message: "",
+      })
+    }, 3000)
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.id]: e.target.value
+    }))
+  }
 
   return (
     <section id="contacto" className="py-20 md:py-32 bg-background">
@@ -71,52 +124,109 @@ export function ContactSection() {
           </div>
 
           <div className="bg-card rounded-2xl border border-border p-8 shadow-lg">
-            <form className="space-y-6">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium text-foreground">
-                    {t("contact.form.name")}
-                  </label>
-                  <Input id="name" placeholder="O seu nome" className="bg-background" />
+            {isSubmitted ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
+                  <CheckCircle className="w-8 h-8 text-green-500" />
                 </div>
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-foreground">
-                    {t("contact.form.email")}
-                  </label>
-                  <Input id="email" type="email" placeholder="email@exemplo.com" className="bg-background" />
+                <h3 className="text-xl font-semibold text-foreground mb-2">Mensagem Enviada!</h3>
+                <p className="text-muted-foreground">
+                  A sua mensagem foi enviada via WhatsApp. Entraremos em contacto brevemente.
+                </p>
+              </div>
+            ) : (
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium text-foreground">
+                      {t("contact.form.name")}
+                    </label>
+                    <Input 
+                      id="name" 
+                      placeholder="O seu nome" 
+                      className="bg-background" 
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium text-foreground">
+                      {t("contact.form.email")}
+                    </label>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="email@exemplo.com" 
+                      className="bg-background" 
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <label htmlFor="phone" className="text-sm font-medium text-foreground">
-                  {t("contact.form.phone")}
-                </label>
-                <Input id="phone" type="tel" placeholder="+351 000 000 000" className="bg-background" />
-              </div>
+                <div className="space-y-2">
+                  <label htmlFor="phone" className="text-sm font-medium text-foreground">
+                    {t("contact.form.phone")}
+                  </label>
+                  <Input 
+                    id="phone" 
+                    type="tel" 
+                    placeholder="+351 000 000 000" 
+                    className="bg-background" 
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <label htmlFor="project" className="text-sm font-medium text-foreground">
-                  Tipo de Projeto
-                </label>
-                <Input id="project" placeholder="Ex: Remodelação de cozinha" className="bg-background" />
-              </div>
+                <div className="space-y-2">
+                  <label htmlFor="project" className="text-sm font-medium text-foreground">
+                    Tipo de Projeto
+                  </label>
+                  <Input 
+                    id="project" 
+                    placeholder="Ex: Remodelação de cozinha" 
+                    className="bg-background" 
+                    value={formData.project}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <label htmlFor="message" className="text-sm font-medium text-foreground">
-                  {t("contact.form.message")}
-                </label>
-                <Textarea
-                  id="message"
-                  placeholder="Descreva o seu projeto..."
-                  rows={4}
-                  className="bg-background resize-none"
-                />
-              </div>
+                <div className="space-y-2">
+                  <label htmlFor="message" className="text-sm font-medium text-foreground">
+                    {t("contact.form.message")}
+                  </label>
+                  <Textarea
+                    id="message"
+                    placeholder="Descreva o seu projeto..."
+                    rows={4}
+                    className="bg-background resize-none"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-              <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                {t("contact.form.submit")}
-              </Button>
-            </form>
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      A enviar...
+                    </>
+                  ) : (
+                    t("contact.form.submit")
+                  )}
+                </Button>
+              </form>
+            )}
           </div>
         </div>
       </div>

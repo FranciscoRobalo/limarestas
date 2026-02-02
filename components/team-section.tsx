@@ -7,7 +7,7 @@ const team = [
     role: "Diretor Geral",
     image: "/professional-man-ceo-portrait-suit.jpg",
     bio: "Com mais de 15 anos de experiência no setor da construção, lidera a visão estratégica da empresa.",
-    linkedin: "#",
+    linkedin: "https://www.linkedin.com/in/franciscorobalo",
     email: "francisco@limarestas.com",
   },
   {
@@ -15,7 +15,7 @@ const team = [
     role: "Gestora de Projetos",
     image: "/professional-woman-project-manager.png",
     bio: "Especialista em gestão de projetos complexos, garante que cada obra cumpre prazos e orçamentos.",
-    linkedin: "#",
+    linkedin: "https://www.linkedin.com/in/anamartins-gestora",
     email: "ana@limarestas.com",
   },
   {
@@ -23,7 +23,7 @@ const team = [
     role: "Consultor Técnico",
     image: "/professional-engineer.png",
     bio: "Engenheiro civil com vasta experiência, avalia tecnicamente todos os projetos e parceiros.",
-    linkedin: "#",
+    linkedin: "https://www.linkedin.com/in/pedrosilva-engenheiro",
     email: "pedro@limarestas.com",
   },
   {
@@ -31,7 +31,7 @@ const team = [
     role: "Relações com Parceiros",
     image: "/professional-woman-business-development-portrait.jpg",
     bio: "Responsável pela expansão e manutenção da rede de empresas parceiras certificadas.",
-    linkedin: "#",
+    linkedin: "https://www.linkedin.com/in/sofiacosta-bd",
     email: "sofia@limarestas.com",
   },
 ]
@@ -62,7 +62,7 @@ export function TeamSection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6">
                   <div className="flex gap-2">
                     <Button size="icon" variant="secondary" className="w-10 h-10 rounded-full" asChild>
-                      <a href={member.linkedin}>
+                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
                         <Linkedin className="w-4 h-4" />
                       </a>
                     </Button>
