@@ -28,8 +28,8 @@ export function BenefitsSection() {
     <section className="py-20 md:py-32 bg-background">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="text-sm font-semibold text-accent uppercase tracking-wider">Porquê escolher-nos</span>
-          <h2 className="mt-4 text-3xl md:text-4xl font-serif font-medium text-foreground">Com a Limarestas</h2>
+          <span className="text-sm font-semibold text-accent uppercase tracking-wider">Porquê a Limarestas</span>
+          <h2 className="mt-4 text-3xl md:text-4xl font-serif font-medium text-foreground">Os nossos compromissos</h2>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">

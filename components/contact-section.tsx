@@ -36,20 +36,23 @@ export function ContactSection() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center shrink-0">
-                  <Phone className="w-5 h-5 text-primary" />
+              <a
+                href="https://wa.me/351910118134"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-4 p-4 bg-green-500/10 border-2 border-green-500/50 rounded-xl hover:bg-green-500/20 transition-colors group"
+              >
+                <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center shrink-0">
+                  <Phone className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <p className="font-medium text-foreground">WhatsApp</p>
-                  <a
-                    href="https://wa.me/351910118134"
-                    className="text-muted-foreground hover:text-accent transition-colors"
-                  >
+                  <span className="text-green-600 font-semibold group-hover:text-green-700 transition-colors">
                     +351 910 118 134
-                  </a>
+                  </span>
+                  <p className="text-sm text-muted-foreground mt-1">Clique para falar connosco</p>
                 </div>
-              </div>
+              </a>
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center shrink-0">

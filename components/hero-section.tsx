@@ -15,8 +15,7 @@ export function HeroSection() {
               Encontramos a equipa certa para qualquer projeto de construção.
             </h1>
             <p className="text-lg text-muted-foreground max-w-xl">
-              Contactamos empresas validadas, ajudamos a comparar orçamentos e tomar decisões informadas e seguras para
-              todo o tipo de projetos de construção.
+              O projeto é seu, o trabalho é nosso.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
@@ -31,7 +30,7 @@ export function HeroSection() {
                 variant="outline"
                 className="border-primary text-primary hover:bg-primary/5 bg-transparent"
               >
-                <Link href="#sobre">Conheça-nos</Link>
+                <Link href="#contacto">Contacte-nos</Link>
               </Button>
             </div>
           </div>

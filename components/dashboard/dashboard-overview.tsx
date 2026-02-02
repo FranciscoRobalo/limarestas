@@ -97,16 +97,28 @@ export function DashboardOverview() {
 
       {isAdmin && (
         <div>
-          <h3 className="text-lg font-semibold text-foreground mb-4">Ferramentas de Gestão</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Calendário, Tarefas e Gestão de Obras</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link href="/dashboard?tab=analytics">
+            <Link href="/dashboard?tab=calendar">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
+                    <CalendarDays className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <CardTitle className="text-base">Calendário da Semana</CardTitle>
+                  <CardDescription>Visualize agenda de visitas e eventos da semana.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+
+            <Link href="/dashboard?tab=workflow">
               <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
                     <BarChart3 className="w-6 h-6 text-blue-600" />
                   </div>
-                  <CardTitle className="text-base">Analytics</CardTitle>
-                  <CardDescription>Visualize métricas e desempenho da plataforma.</CardDescription>
+                  <CardTitle className="text-base">Gestão de Obras</CardTitle>
+                  <CardDescription>Acompanhe o progresso das obras em curso.</CardDescription>
                 </CardHeader>
               </Card>
             </Link>
@@ -119,18 +131,6 @@ export function DashboardOverview() {
                   </div>
                   <CardTitle className="text-base">Faturação</CardTitle>
                   <CardDescription>Gerencie faturas e acompanhe pagamentos.</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-
-            <Link href="/dashboard?tab=calendar">
-              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
-                    <CalendarDays className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <CardTitle className="text-base">Calendário</CardTitle>
-                  <CardDescription>Visualize agenda de visitas e eventos.</CardDescription>
                 </CardHeader>
               </Card>
             </Link>
@@ -204,14 +204,14 @@ export function DashboardOverview() {
           )}
 
           {(isAdmin || isTecnico) && (
-            <Link href="/dashboard?tab=obras">
+            <Link href="/dashboard?tab=empreiteiros">
               <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
                     <Building2 className="w-6 h-6 text-accent" />
                   </div>
-                  <CardTitle className="text-base">Obras Disponíveis</CardTitle>
-                  <CardDescription>Explore concursos e oportunidades.</CardDescription>
+                  <CardTitle className="text-base">Lista de Empreiteiros</CardTitle>
+                  <CardDescription>Consulte empreiteiros e contactos.</CardDescription>
                 </CardHeader>
               </Card>
             </Link>

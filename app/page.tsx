@@ -7,7 +7,6 @@ import { ServicesSection } from "@/components/services-section"
 import { PortfolioSection } from "@/components/portfolio-section"
 import { BudgetCalculator } from "@/components/budget-calculator"
 import { TestimonialsSection } from "@/components/testimonials-section"
-import { TeamSection } from "@/components/team-section"
 import { FAQSection } from "@/components/faq-section"
 import { PartnersSection } from "@/components/partners-section"
 import { ContactSection } from "@/components/contact-section"
@@ -22,13 +21,12 @@ export default function Home() {
       <StatsSection />
       <BenefitsSection />
       <ServicesSection />
+      <ContactSection />
       <PortfolioSection />
       <BudgetCalculator />
       <TestimonialsSection />
-      <TeamSection />
       <FAQSection />
       <PartnersSection />
-      <ContactSection />
       <Footer />
     </main>
   )

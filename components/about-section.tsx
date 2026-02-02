@@ -35,15 +35,10 @@ export function AboutSection() {
               O projeto é seu. O trabalho é nosso.
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Contactamos empresas validadas, ajudamos a comparar orçamentos e tomar decisões informadas e seguras para
-              todo o tipo de projetos de construção.
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              A LAT - Limarestas poupa-lhe tempo, dinheiro e dores de cabeça. Fazemos a ponte entre o seu projeto e a
-              solução certa — sem compromisso.
+              A LAT – Limarestas poupa-lhe preocupações, dinheiro e tempo.
             </p>
             <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href="#contacto">Conheça-nos</Link>
+              <Link href="#contacto">Contacte-nos</Link>
             </Button>
           </div>
         </div>

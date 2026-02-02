@@ -51,13 +51,12 @@ const navigation: NavItem[] = [
     roles: ["admin", "tecnico"],
   },
   { name: "Gestão de Obras", href: "/dashboard?tab=workflow", icon: GitBranch, id: "workflow", roles: ["admin"] },
-  { name: "Nova Obra", href: "/dashboard?tab=nova-obra", icon: PlusCircle, id: "nova-obra", roles: ["admin"] },
-  { name: "Pré-Validação", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao", roles: ["admin"] },
+  { name: "Aprovação de Orçamentos", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao", roles: ["admin"] },
   {
-    name: "Agendar Visita",
-    href: "/dashboard?tab=agendar",
-    icon: Calendar,
-    id: "agendar",
+    name: "Obras Concluídas",
+    href: "/dashboard?tab=obras-concluidas",
+    icon: Building2,
+    id: "obras-concluidas",
     roles: ["admin", "tecnico"],
   },
   {
@@ -68,15 +67,22 @@ const navigation: NavItem[] = [
     roles: ["public"],
   },
   {
-    name: "Obras Disponíveis",
-    href: "/dashboard?tab=obras",
+    name: "Lista de Empreiteiros",
+    href: "/dashboard?tab=empreiteiros",
     icon: Building2,
-    id: "obras",
+    id: "empreiteiros",
     roles: ["admin", "tecnico"],
+  },
+  {
+    name: "Painel Técnico",
+    href: "/dashboard?tab=painel-tecnico",
+    icon: ClipboardCheck,
+    id: "painel-tecnico",
+    roles: ["admin"],
   },
   { name: "Faturação", href: "/dashboard?tab=invoices", icon: Receipt, id: "invoices", roles: ["admin"] },
   {
-    name: "Documentos",
+    name: "Consulta de Contas",
     href: "/dashboard?tab=documents",
     icon: FileText,
     id: "documents",
@@ -96,14 +102,14 @@ const navigation: NavItem[] = [
     id: "notifications",
     roles: ["admin", "tecnico", "public"],
   },
-  { name: "Registo de Atividades", href: "/dashboard?tab=logs", icon: Activity, id: "logs", roles: ["admin"] },
   {
-    name: "Publicidade",
-    href: "/dashboard?tab=publicidade",
-    icon: Megaphone,
-    id: "publicidade",
-    roles: ["publicidade", "admin"],
+    name: "Feedback de Clientes",
+    href: "/dashboard?tab=feedback",
+    icon: Activity,
+    id: "feedback",
+    roles: ["admin"],
   },
+  { name: "Registo de Atividades", href: "/dashboard?tab=logs", icon: Activity, id: "logs", roles: ["admin"] },
   {
     name: "Definições de Conta",
     href: "/dashboard?tab=settings",
@@ -219,7 +225,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Menu className="w-6 h-6" />
             </button>
             <h1 className="text-lg font-semibold text-foreground lg:text-xl">
-              {user?.role === "publicidade" ? "Plataforma de Publicidade" : "Área de Cliente"}
+              {user?.role === "admin" ? "Painel Administrativo" : user?.role === "tecnico" ? "Painel Técnico" : "Painel"}
             </h1>
             <div className="w-6 lg:hidden" />
           </div>
