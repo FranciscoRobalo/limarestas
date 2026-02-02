@@ -3,7 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Menu, X, User, LogOut, Globe } from "lucide-react"
+import { Menu, X, User, LogOut, Globe, Sun, Moon } from "lucide-react"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
 import { useLanguage } from "@/contexts/language-context"
@@ -24,6 +25,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { isAuthenticated, user, logout } = useAuth()
   const { language, setLanguage, t } = useLanguage()
+  const { theme, setTheme } = useTheme()
 
   const navigation = [
     { name: t("nav.inicio"), href: "/#inicio" },
@@ -61,6 +63,18 @@ export function Header() {
               {item.name}
             </Link>
           ))}
+
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
 
           {/* Language Switcher */}
           <DropdownMenu>
@@ -137,6 +151,35 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
+
+            {/* Mobile Theme Toggle */}
+            <div className="flex items-center gap-2 pt-2 border-t border-border">
+              <span className="text-sm text-muted-foreground">Tema:</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setTheme("light")}
+                  className={`px-3 py-1 text-xs font-semibold rounded flex items-center gap-1 ${
+                    theme === "light" 
+                      ? "bg-primary text-primary-foreground" 
+                      : "bg-muted text-muted-foreground hover:bg-accent"
+                  }`}
+                >
+                  <Sun className="w-3 h-3" />
+                  Claro
+                </button>
+                <button
+                  onClick={() => setTheme("dark")}
+                  className={`px-3 py-1 text-xs font-semibold rounded flex items-center gap-1 ${
+                    theme === "dark" 
+                      ? "bg-primary text-primary-foreground" 
+                      : "bg-muted text-muted-foreground hover:bg-accent"
+                  }`}
+                >
+                  <Moon className="w-3 h-3" />
+                  Escuro
+                </button>
+              </div>
+            </div>
 
             {/* Mobile Language Switcher */}
             <div className="flex items-center gap-2 pt-2 border-t border-border">
