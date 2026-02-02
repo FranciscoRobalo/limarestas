@@ -32,7 +32,7 @@ interface Feedback {
   tipo: "positivo" | "neutro" | "negativo"
 }
 
-const feedbacks: Feedback[] = [
+const initialFeedbacks: Feedback[] = [
   {
     id: "FB-001",
     obraId: "OBR-001",
@@ -93,8 +93,15 @@ const statusConfig = {
 }
 
 export function FeedbackSection() {
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>(initialFeedbacks)
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("todos")
+
+  const updateFeedbackStatus = (id: string, newStatus: Feedback["status"]) => {
+    setFeedbacks(prev => prev.map(fb => 
+      fb.id === id ? { ...fb, status: newStatus } : fb
+    ))
+  }
 
   const filteredFeedbacks = feedbacks.filter((fb) => {
     const matchSearch =
@@ -255,19 +262,25 @@ export function FeedbackSection() {
                     </p>
                     <div className="flex gap-2">
                       {fb.status === "novo" && (
-                        <Button size="sm">
+                        <Button size="sm" onClick={() => updateFeedbackStatus(fb.id, "analisado")}>
                           <CheckCircle2 className="w-4 h-4 mr-2" />
                           Marcar como Analisado
                         </Button>
                       )}
                       {fb.status === "analisado" && (
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" onClick={() => updateFeedbackStatus(fb.id, "resolvido")}>
                           <CheckCircle2 className="w-4 h-4 mr-2" />
                           Marcar como Resolvido
                         </Button>
                       )}
-                      <Button variant="outline" size="sm">
-                        Ver Obra
+                      {fb.status === "resolvido" && (
+                        <Badge className="bg-green-500/10 text-green-600 border border-green-500/30">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Concluído
+                        </Badge>
+                      )}
+                      <Button variant="outline" size="sm" onClick={() => window.open(`mailto:${fb.clienteEmail}`, '_blank')}>
+                        Contactar Cliente
                       </Button>
                     </div>
                   </div>

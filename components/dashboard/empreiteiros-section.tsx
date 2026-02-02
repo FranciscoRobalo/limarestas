@@ -136,12 +136,40 @@ export function EmpreiteirosSection() {
     return matchSearch && matchDistrito && matchEspecialidade
   })
 
+  const [selectedObra, setSelectedObra] = useState("")
+
   const handleEnviarEmail = () => {
+    if (!selectedEmpreiteiro || !selectedObra) return
+
+    // Create email with obra information
+    const obraName = selectedObra === "obra1" 
+      ? "Remodelação Apartamento T3 - Lisboa" 
+      : selectedObra === "obra2" 
+        ? "Construção Moradia - Cascais" 
+        : "Reabilitação Prédio - Porto"
+
+    const emailSubject = encodeURIComponent(`Proposta de Obra: ${obraName}`)
+    const emailBody = encodeURIComponent(
+      `Exmo. Sr. ${selectedEmpreiteiro.nome},\n\n` +
+      `Vimos por este meio convidar a ${selectedEmpreiteiro.empresa} a apresentar proposta para a seguinte obra:\n\n` +
+      `Obra: ${obraName}\n\n` +
+      `Por favor, responda a este email com a sua disponibilidade e orçamento estimado.\n\n` +
+      `Com os melhores cumprimentos,\n` +
+      `Equipa Limarestas`
+    )
+
+    window.open(`mailto:${selectedEmpreiteiro.email}?subject=${emailSubject}&body=${emailBody}`, '_blank')
+
     setEmailEnviado(true)
     setTimeout(() => {
       setEmailEnviado(false)
       setSelectedEmpreiteiro(null)
+      setSelectedObra("")
     }, 2000)
+  }
+
+  const handlePhoneCall = (phone: string) => {
+    window.open(`tel:${phone.replace(/\s/g, '')}`, '_blank')
   }
 
   return (
@@ -310,7 +338,7 @@ export function EmpreiteirosSection() {
                           <>
                             <div className="space-y-2">
                               <Label>Obra</Label>
-                              <Select>
+                              <Select value={selectedObra} onValueChange={setSelectedObra}>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Selecione uma obra" />
                                 </SelectTrigger>
@@ -321,7 +349,7 @@ export function EmpreiteirosSection() {
                                 </SelectContent>
                               </Select>
                             </div>
-                            <Button className="w-full" onClick={handleEnviarEmail}>
+                            <Button className="w-full" onClick={handleEnviarEmail} disabled={!selectedObra}>
                               <Mail className="w-4 h-4 mr-2" />
                               Enviar Email
                             </Button>
@@ -330,7 +358,14 @@ export function EmpreiteirosSection() {
                       </div>
                     </DialogContent>
                   </Dialog>
-                  <Button variant="outline">Ver Perfil Completo</Button>
+                  <Button variant="outline" onClick={() => handlePhoneCall(emp.telefone)}>
+                    <Phone className="w-4 h-4 mr-2" />
+                    Ligar
+                  </Button>
+                  <Button variant="outline" onClick={() => window.open(`mailto:${emp.email}`, '_blank')}>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Email
+                  </Button>
                 </div>
               </CardContent>
             </Card>

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Menu, X, User, LogOut, Globe } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
@@ -38,11 +39,15 @@ export function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
-            <span className="text-primary-foreground font-bold text-sm">LAT</span>
-          </div>
-          <span className="text-xl font-semibold text-foreground">Limarestas</span>
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/limarestas-logo.png"
+            alt="LAT - Soluções de Construção"
+            width={120}
+            height={48}
+            className="h-12 w-auto"
+            priority
+          />
         </Link>
 
         {/* Desktop navigation */}
