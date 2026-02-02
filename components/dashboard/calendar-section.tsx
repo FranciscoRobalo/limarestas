@@ -1,10 +1,14 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, User, Share2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, User, Share2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useVisitas } from "@/hooks/use-visitas"
 import {
   DropdownMenu,
@@ -101,7 +105,53 @@ const mockEvents: CalendarEvent[] = generateMockEvents()
 export function CalendarSection() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [events, setEvents] = useState<CalendarEvent[]>(generateMockEvents())
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    date: "",
+    time: "",
+    type: "visita" as CalendarEvent["type"],
+    location: "",
+    client: "",
+  })
   const { visitas } = useVisitas()
+
+  const handleCreateEvent = () => {
+    if (!newEvent.title || !newEvent.date || !newEvent.time) {
+      alert("Por favor preencha todos os campos obrigatorios")
+      return
+    }
+
+    const event: CalendarEvent = {
+      id: Date.now().toString(),
+      title: newEvent.title,
+      date: newEvent.date,
+      time: newEvent.time,
+      type: newEvent.type,
+      location: newEvent.location || undefined,
+      client: newEvent.client || undefined,
+    }
+
+    setEvents([...events, event])
+    setNewEvent({
+      title: "",
+      date: "",
+      time: "",
+      type: "visita",
+      location: "",
+      client: "",
+    })
+    setIsCreateDialogOpen(false)
+  }
+
+  const openCreateDialog = (preselectedDate?: Date) => {
+    if (preselectedDate) {
+      const dateStr = preselectedDate.toISOString().split("T")[0]
+      setNewEvent({ ...newEvent, date: dateStr })
+    }
+    setIsCreateDialogOpen(true)
+  }
 
   const allEvents = useMemo(() => {
     const visitaEvents: CalendarEvent[] = visitas.map((v) => ({
@@ -112,8 +162,8 @@ export function CalendarSection() {
       type: "visita" as const,
       location: v.obraId,
     }))
-    return [...mockEvents, ...visitaEvents]
-  }, [visitas])
+    return [...events, ...visitaEvents]
+  }, [visitas, events])
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()
@@ -219,7 +269,10 @@ export function CalendarSection() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
+          <Button 
+            className="bg-accent hover:bg-accent/90 text-accent-foreground"
+            onClick={() => openCreateDialog()}
+          >
             <Plus className="w-4 h-4 mr-2" /> Novo Evento
           </Button>
         </div>
@@ -352,7 +405,11 @@ export function CalendarSection() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <p>Nenhum evento para este dia</p>
-                <Button variant="link" className="mt-2 text-accent">
+                <Button 
+                  variant="link" 
+                  className="mt-2 text-accent"
+                  onClick={() => openCreateDialog(selectedDate || undefined)}
+                >
                   Adicionar evento
                 </Button>
               </div>
@@ -360,6 +417,89 @@ export function CalendarSection() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Create Event Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Novo Evento</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Titulo *</Label>
+              <Input
+                id="title"
+                value={newEvent.title}
+                onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                placeholder="Ex: Visita Tecnica - Lisboa"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="date">Data *</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={newEvent.date}
+                  onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="time">Hora *</Label>
+                <Input
+                  id="time"
+                  type="time"
+                  value={newEvent.time}
+                  onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="type">Tipo de Evento</Label>
+              <Select
+                value={newEvent.type}
+                onValueChange={(value: CalendarEvent["type"]) => setNewEvent({ ...newEvent, type: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="visita">Visita</SelectItem>
+                  <SelectItem value="reuniao">Reuniao</SelectItem>
+                  <SelectItem value="entrega">Entrega</SelectItem>
+                  <SelectItem value="prazo">Prazo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="location">Localizacao</Label>
+              <Input
+                id="location"
+                value={newEvent.location}
+                onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+                placeholder="Ex: Lisboa, Cascais"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="client">Cliente</Label>
+              <Input
+                id="client"
+                value={newEvent.client}
+                onChange={(e) => setNewEvent({ ...newEvent, client: e.target.value })}
+                placeholder="Nome do cliente"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCreateEvent} className="bg-accent hover:bg-accent/90 text-accent-foreground">
+              Criar Evento
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
