@@ -5,7 +5,6 @@ import { StatsSection } from "@/components/stats-section"
 import { BenefitsSection } from "@/components/benefits-section"
 import { ServicesSection } from "@/components/services-section"
 import { PortfolioSection } from "@/components/portfolio-section"
-import { BudgetCalculator } from "@/components/budget-calculator"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { FAQSection } from "@/components/faq-section"
 import { PartnersSection } from "@/components/partners-section"
@@ -23,12 +22,11 @@ export default function Home() {
       <BenefitsSection />
       <ServicesSection />
       <TeamSection />
-      <ContactSection />
       <PortfolioSection />
-      <BudgetCalculator />
       <TestimonialsSection />
       <FAQSection />
       <PartnersSection />
+      <ContactSection />
       <Footer />
     </main>
   )
