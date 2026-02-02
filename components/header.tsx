@@ -25,14 +25,14 @@ export function Header() {
   const { language, setLanguage, t } = useLanguage()
 
   const navigation = [
-    { name: t("nav.inicio"), href: "#inicio" },
-    { name: t("nav.sobre"), href: "#sobre" },
-    { name: t("nav.servicos"), href: "#servicos" },
-    { name: t("nav.portfolio"), href: "#portfolio" },
-    { name: t("nav.calculadora"), href: "#calculadora" },
-    { name: t("nav.contacto"), href: "#contacto" },
+    { name: t("nav.inicio"), href: "/#inicio" },
+    { name: t("nav.sobre"), href: "/#sobre" },
+    { name: t("nav.servicos"), href: "/#servicos" },
+    { name: t("nav.portfolio"), href: "/#portfolio" },
+    { name: t("nav.calculadora"), href: "/#calculadora" },
+    { name: t("nav.contacto"), href: "/#contacto" },
     { name: t("nav.equipa"), href: "/junte-se" },
-    { name: t("nav.faq"), href: "#faq" },
+    { name: t("nav.faq"), href: "/#faq" },
   ]
 
   return (
@@ -102,7 +102,7 @@ export function Header() {
                 <Link href="/login">{t("nav.entrar")}</Link>
               </Button>
               <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="#contacto">{t("nav.fale_connosco")}</Link>
+                <Link href="/#contacto">{t("nav.fale_connosco")}</Link>
               </Button>
             </div>
           )}
@@ -182,7 +182,7 @@ export function Header() {
                   </Link>
                 </Button>
                 <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                  <Link href="#contacto" onClick={() => setMobileMenuOpen(false)}>
+                  <Link href="/#contacto" onClick={() => setMobileMenuOpen(false)}>
                     {t("nav.fale_connosco")}
                   </Link>
                 </Button>
