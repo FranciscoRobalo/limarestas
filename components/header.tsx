@@ -2,9 +2,21 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Menu, X, User, LogOut } from "lucide-react"
+import { Menu, X, User, LogOut, Globe } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+const languages = [
+  { code: "pt", name: "Português", flag: "PT" },
+  { code: "en", name: "English", flag: "EN" },
+  { code: "es", name: "Español", flag: "ES" },
+]
 
 const navigation = [
   { name: "Início", href: "#inicio" },
@@ -19,6 +31,7 @@ const navigation = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [currentLanguage, setCurrentLanguage] = useState("pt")
   const { isAuthenticated, user, logout } = useAuth()
 
   return (
@@ -43,8 +56,30 @@ export function Header() {
             </Link>
           ))}
 
+          {/* Language Switcher */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-2">
+                <Globe className="w-4 h-4" />
+                <span className="text-xs font-semibold">{languages.find(l => l.code === currentLanguage)?.flag}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {languages.map((lang) => (
+                <DropdownMenuItem
+                  key={lang.code}
+                  onClick={() => setCurrentLanguage(lang.code)}
+                  className={currentLanguage === lang.code ? "bg-accent" : ""}
+                >
+                  <span className="font-semibold mr-2">{lang.flag}</span>
+                  {lang.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {isAuthenticated ? (
-            <div className="flex items-center gap-3 ml-4">
+            <div className="flex items-center gap-3 ml-2">
               <Button asChild variant="outline" className="gap-2 bg-transparent">
                 <Link href="/dashboard">
                   <User className="w-4 h-4" />
@@ -61,7 +96,7 @@ export function Header() {
               </Button>
             </div>
           ) : (
-            <div className="flex items-center gap-3 ml-4">
+            <div className="flex items-center gap-3 ml-2">
               <Button asChild variant="outline">
                 <Link href="/login">Entrar</Link>
               </Button>
@@ -96,6 +131,27 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
+
+            {/* Mobile Language Switcher */}
+            <div className="flex items-center gap-2 pt-2 border-t border-border">
+              <Globe className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Idioma:</span>
+              <div className="flex gap-2">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => setCurrentLanguage(lang.code)}
+                    className={`px-2 py-1 text-xs font-semibold rounded ${
+                      currentLanguage === lang.code 
+                        ? "bg-primary text-primary-foreground" 
+                        : "bg-muted text-muted-foreground hover:bg-accent"
+                    }`}
+                  >
+                    {lang.flag}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {isAuthenticated ? (
               <div className="space-y-2 pt-4 border-t border-border">

@@ -204,14 +204,14 @@ export function DashboardOverview() {
           )}
 
           {(isAdmin || isTecnico) && (
-            <Link href="/dashboard?tab=obras">
+            <Link href="/dashboard?tab=empreiteiros">
               <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
                     <Building2 className="w-6 h-6 text-accent" />
                   </div>
-                  <CardTitle className="text-base">Obras Disponíveis</CardTitle>
-                  <CardDescription>Explore concursos e oportunidades.</CardDescription>
+                  <CardTitle className="text-base">Lista de Empreiteiros</CardTitle>
+                  <CardDescription>Consulte empreiteiros e contactos.</CardDescription>
                 </CardHeader>
               </Card>
             </Link>
