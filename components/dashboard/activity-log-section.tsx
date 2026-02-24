@@ -15,7 +15,6 @@ import {
   Calendar,
   MessageSquare,
   Building2,
-  Megaphone,
   Settings,
   Download,
 } from "lucide-react"
@@ -26,7 +25,6 @@ const entityIcons = {
   visita: Calendar,
   mensagem: MessageSquare,
   usuario: User,
-  publicidade: Megaphone,
   sistema: Settings,
 }
 
@@ -36,15 +34,15 @@ const entityColors = {
   visita: "bg-purple-100 text-purple-700",
   mensagem: "bg-amber-100 text-amber-700",
   usuario: "bg-cyan-100 text-cyan-700",
-  publicidade: "bg-pink-100 text-pink-700",
   sistema: "bg-gray-100 text-gray-700",
 }
 
-const roleColors = {
+const roleColors: Record<string, string> = {
   admin: "bg-red-100 text-red-700",
   tecnico: "bg-blue-100 text-blue-700",
-  public: "bg-green-100 text-green-700",
-  publicidade: "bg-purple-100 text-purple-700",
+  cliente: "bg-green-100 text-green-700",
+  construtor: "bg-amber-100 text-amber-700",
+  empreiteiro: "bg-purple-100 text-purple-700",
 }
 
 export function ActivityLogSection() {

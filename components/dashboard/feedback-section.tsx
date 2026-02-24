@@ -4,292 +4,239 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import {
-  Star,
-  MessageSquare,
-  Search,
-  ThumbsUp,
-  ThumbsDown,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  Building2,
-  User,
-} from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Star, MessageSquare, Building2, User, Calendar, Send, CheckCircle2 } from "lucide-react"
 
 interface Feedback {
   id: string
   obraId: string
   obraNome: string
-  clienteNome: string
-  clienteEmail: string
+  cliente: string
+  data: string
   rating: number
   comentario: string
-  dataSubmissao: string
-  status: "novo" | "analisado" | "resolvido"
-  tipo: "positivo" | "neutro" | "negativo"
+  estado: "pendente" | "lido" | "respondido"
+  resposta?: string
 }
 
-const initialFeedbacks: Feedback[] = [
+const feedbacksExemplo: Feedback[] = [
   {
-    id: "FB-001",
+    id: "1",
     obraId: "OBR-001",
     obraNome: "Remodelação Apartamento T3 - Lisboa",
-    clienteNome: "João Silva",
-    clienteEmail: "joao.silva@email.com",
+    cliente: "João Silva",
+    data: "2025-01-20",
     rating: 5,
-    comentario:
-      "Excelente trabalho! A equipa foi muito profissional e cumpriu todos os prazos. Recomendo vivamente.",
-    dataSubmissao: "2024-02-15",
-    status: "analisado",
-    tipo: "positivo",
+    comentario: "Excelente trabalho! A equipa foi muito profissional e cumpriu todos os prazos. Recomendo vivamente.",
+    estado: "respondido",
+    resposta: "Muito obrigado pelo seu feedback positivo! Foi um prazer trabalhar consigo.",
   },
   {
-    id: "FB-002",
+    id: "2",
     obraId: "OBR-002",
     obraNome: "Construção Moradia - Cascais",
-    clienteNome: "Maria Santos",
-    clienteEmail: "maria.santos@email.com",
+    cliente: "Maria Santos",
+    data: "2025-01-18",
     rating: 4,
-    comentario:
-      "Bom serviço no geral, apenas houve um pequeno atraso na entrega dos materiais, mas foi resolvido rapidamente.",
-    dataSubmissao: "2024-02-10",
-    status: "resolvido",
-    tipo: "positivo",
+    comentario: "Bom trabalho no geral. Houve alguns pequenos atrasos mas a qualidade final foi boa.",
+    estado: "lido",
   },
   {
-    id: "FB-003",
+    id: "3",
     obraId: "OBR-003",
     obraNome: "Reabilitação Prédio - Porto",
-    clienteNome: "António Costa",
-    clienteEmail: "antonio.costa@email.com",
-    rating: 2,
-    comentario:
-      "Tive alguns problemas de comunicação com a equipa. Os trabalhos ficaram bem mas a experiência podia ter sido melhor.",
-    dataSubmissao: "2024-02-08",
-    status: "novo",
-    tipo: "negativo",
-  },
-  {
-    id: "FB-004",
-    obraId: "OBR-004",
-    obraNome: "Remodelação Cozinha - Almada",
-    clienteNome: "Ana Rodrigues",
-    clienteEmail: "ana.rodrigues@email.com",
+    cliente: "António Costa",
+    data: "2025-01-15",
     rating: 5,
-    comentario: "Perfeito! A minha cozinha ficou linda. Muito obrigada por todo o apoio.",
-    dataSubmissao: "2024-02-05",
-    status: "analisado",
-    tipo: "positivo",
+    comentario: "Superou as expectativas! Comunicação clara e trabalho impecável.",
+    estado: "pendente",
   },
 ]
 
-const statusConfig = {
-  novo: { label: "Novo", color: "bg-blue-500/10 text-blue-600 border-blue-500/30", icon: Clock },
-  analisado: { label: "Analisado", color: "bg-yellow-500/10 text-yellow-600 border-yellow-500/30", icon: MessageSquare },
-  resolvido: { label: "Resolvido", color: "bg-green-500/10 text-green-600 border-green-500/30", icon: CheckCircle2 },
-}
-
 export function FeedbackSection() {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>(initialFeedbacks)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [activeTab, setActiveTab] = useState("todos")
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>(feedbacksExemplo)
+  const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null)
+  const [resposta, setResposta] = useState("")
 
-  const updateFeedbackStatus = (id: string, newStatus: Feedback["status"]) => {
-    setFeedbacks(prev => prev.map(fb => 
-      fb.id === id ? { ...fb, status: newStatus } : fb
-    ))
+  const handleResponder = () => {
+    if (!selectedFeedback || !resposta.trim()) return
+
+    setFeedbacks((prev) =>
+      prev.map((f) =>
+        f.id === selectedFeedback.id ? { ...f, estado: "respondido" as const, resposta } : f
+      )
+    )
+    setSelectedFeedback(null)
+    setResposta("")
   }
 
-  const filteredFeedbacks = feedbacks.filter((fb) => {
-    const matchSearch =
-      fb.obraNome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fb.clienteNome.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleMarcarLido = (id: string) => {
+    setFeedbacks((prev) =>
+      prev.map((f) => (f.id === id && f.estado === "pendente" ? { ...f, estado: "lido" as const } : f))
+    )
+  }
 
-    const matchTab = activeTab === "todos" || fb.tipo === activeTab || fb.status === activeTab
-
-    return matchSearch && matchTab
-  })
-
-  const stats = {
-    total: feedbacks.length,
-    positivos: feedbacks.filter((f) => f.tipo === "positivo").length,
-    negativos: feedbacks.filter((f) => f.tipo === "negativo").length,
-    novos: feedbacks.filter((f) => f.status === "novo").length,
-    mediaRating: (feedbacks.reduce((acc, f) => acc + f.rating, 0) / feedbacks.length).toFixed(1),
+  const getEstadoBadge = (estado: Feedback["estado"]) => {
+    switch (estado) {
+      case "pendente":
+        return <Badge variant="destructive">Pendente</Badge>
+      case "lido":
+        return <Badge variant="outline" className="border-amber-500 text-amber-600">Lido</Badge>
+      case "respondido":
+        return <Badge className="bg-green-500">Respondido</Badge>
+    }
   }
 
   const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }).map((_, i) => (
-      <Star
-        key={i}
-        className={`w-4 h-4 ${i < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
-      />
-    ))
+    return (
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`w-4 h-4 ${star <= rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+          />
+        ))}
+      </div>
+    )
   }
 
+  const pendentes = feedbacks.filter((f) => f.estado === "pendente").length
+  const mediaRating = feedbacks.reduce((acc, f) => acc + f.rating, 0) / feedbacks.length
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-serif text-foreground mb-2">Feedback de Clientes</h2>
         <p className="text-muted-foreground">
-          Controlo interno de qualidade - receba e analise feedback dos clientes sobre as obras a decorrer.
+          Receba feedback dos clientes sobre obras em decorrer para controlo interno de qualidade.
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      {/* Estatísticas */}
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-foreground">{stats.total}</div>
-            <p className="text-sm text-muted-foreground">Total Feedbacks</p>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total de Feedbacks</CardTitle>
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{feedbacks.length}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-              <div className="text-2xl font-bold text-foreground">{stats.mediaRating}</div>
-            </div>
-            <p className="text-sm text-muted-foreground">Média Geral</p>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pendentes</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-amber-600">{pendentes}</div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <ThumbsUp className="w-5 h-5 text-green-600" />
-              <div className="text-2xl font-bold text-green-600">{stats.positivos}</div>
-            </div>
-            <p className="text-sm text-muted-foreground">Positivos</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <ThumbsDown className="w-5 h-5 text-red-600" />
-              <div className="text-2xl font-bold text-red-600">{stats.negativos}</div>
-            </div>
-            <p className="text-sm text-muted-foreground">Negativos</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-blue-600" />
-              <div className="text-2xl font-bold text-blue-600">{stats.novos}</div>
-            </div>
-            <p className="text-sm text-muted-foreground">Por Analisar</p>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Avaliação Média</CardTitle>
+            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{mediaRating.toFixed(1)}</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Search and Filters */}
+      {/* Lista de Feedbacks */}
       <div className="space-y-4">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Pesquisar por obra ou cliente..."
-            className="pl-9"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        {feedbacks.map((feedback) => (
+          <Card key={feedback.id} className={feedback.estado === "pendente" ? "border-amber-500/50" : ""}>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-primary" />
+                    <CardTitle className="text-lg">{feedback.obraNome}</CardTitle>
+                  </div>
+                  <CardDescription className="flex items-center gap-4">
+                    <span className="flex items-center gap-1">
+                      <User className="w-3 h-3" />
+                      {feedback.cliente}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(feedback.data).toLocaleDateString("pt-PT")}
+                    </span>
+                  </CardDescription>
+                </div>
+                <div className="flex items-center gap-3">
+                  {renderStars(feedback.rating)}
+                  {getEstadoBadge(feedback.estado)}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-secondary/50 rounded-lg p-4">
+                <p className="text-foreground">{feedback.comentario}</p>
+              </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="todos">Todos</TabsTrigger>
-            <TabsTrigger value="novo">Novos</TabsTrigger>
-            <TabsTrigger value="positivo">Positivos</TabsTrigger>
-            <TabsTrigger value="negativo">Negativos</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+              {feedback.resposta && (
+                <div className="bg-primary/5 border-l-4 border-primary rounded-lg p-4">
+                  <p className="text-sm font-medium text-primary mb-1">Resposta LAT:</p>
+                  <p className="text-muted-foreground">{feedback.resposta}</p>
+                </div>
+              )}
 
-      {/* Feedback List */}
-      <div className="space-y-4">
-        {filteredFeedbacks.length === 0 ? (
-          <Card className="p-12 text-center">
-            <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">Nenhum feedback encontrado.</p>
+              <div className="flex justify-end gap-2">
+                {feedback.estado === "pendente" && (
+                  <Button variant="outline" size="sm" onClick={() => handleMarcarLido(feedback.id)}>
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Marcar como Lido
+                  </Button>
+                )}
+                {feedback.estado !== "respondido" && (
+                  <Button size="sm" onClick={() => setSelectedFeedback(feedback)}>
+                    <Send className="w-4 h-4 mr-2" />
+                    Responder
+                  </Button>
+                )}
+              </div>
+            </CardContent>
           </Card>
-        ) : (
-          filteredFeedbacks.map((fb) => {
-            const status = statusConfig[fb.status]
-            const StatusIcon = status.icon
-
-            return (
-              <Card
-                key={fb.id}
-                className={`border-l-4 ${
-                  fb.tipo === "positivo"
-                    ? "border-l-green-500"
-                    : fb.tipo === "negativo"
-                      ? "border-l-red-500"
-                      : "border-l-yellow-500"
-                }`}
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Building2 className="w-4 h-4 text-muted-foreground" />
-                        <CardTitle className="text-lg">{fb.obraNome}</CardTitle>
-                      </div>
-                      <CardDescription className="flex items-center gap-2">
-                        <User className="w-3 h-3" />
-                        {fb.clienteNome} - {fb.clienteEmail}
-                      </CardDescription>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex">{renderStars(fb.rating)}</div>
-                      <Badge className={`${status.color} border`}>
-                        <StatusIcon className="w-3 h-3 mr-1" />
-                        {status.label}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-secondary/50 rounded-lg p-4 mb-4">
-                    <p className="text-foreground italic">"{fb.comentario}"</p>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">
-                      Submetido em {new Date(fb.dataSubmissao).toLocaleDateString("pt-PT")}
-                    </p>
-                    <div className="flex gap-2">
-                      {fb.status === "novo" && (
-                        <Button size="sm" onClick={() => updateFeedbackStatus(fb.id, "analisado")}>
-                          <CheckCircle2 className="w-4 h-4 mr-2" />
-                          Marcar como Analisado
-                        </Button>
-                      )}
-                      {fb.status === "analisado" && (
-                        <Button size="sm" variant="outline" onClick={() => updateFeedbackStatus(fb.id, "resolvido")}>
-                          <CheckCircle2 className="w-4 h-4 mr-2" />
-                          Marcar como Resolvido
-                        </Button>
-                      )}
-                      {fb.status === "resolvido" && (
-                        <Badge className="bg-green-500/10 text-green-600 border border-green-500/30">
-                          <CheckCircle2 className="w-3 h-3 mr-1" />
-                          Concluído
-                        </Badge>
-                      )}
-                      <Button variant="outline" size="sm" onClick={() => window.open(`mailto:${fb.clienteEmail}`, '_blank')}>
-                        Contactar Cliente
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })
-        )}
+        ))}
       </div>
+
+      {/* Modal de Resposta */}
+      {selectedFeedback && (
+        <div className="fixed inset-0 z-50 bg-foreground/50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-lg">
+            <CardHeader>
+              <CardTitle>Responder ao Feedback</CardTitle>
+              <CardDescription>
+                Obra: {selectedFeedback.obraNome}
+                <br />
+                Cliente: {selectedFeedback.cliente}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-secondary/50 rounded-lg p-4">
+                <p className="text-sm text-muted-foreground">{selectedFeedback.comentario}</p>
+              </div>
+              <Textarea
+                placeholder="Escreva a sua resposta..."
+                value={resposta}
+                onChange={(e) => setResposta(e.target.value)}
+                rows={4}
+              />
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setSelectedFeedback(null)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleResponder} disabled={!resposta.trim()}>
+                  <Send className="w-4 h-4 mr-2" />
+                  Enviar Resposta
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }
