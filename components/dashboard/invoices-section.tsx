@@ -91,6 +91,7 @@ export function InvoicesSection() {
   const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [entityFilter, setEntityFilter] = useState("all")
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [newInvoice, setNewInvoice] = useState({
     client: "",
@@ -276,6 +277,17 @@ export function InvoicesSection() {
             className="pl-10"
           />
         </div>
+        <Select value={entityFilter} onValueChange={setEntityFilter}>
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Tipo de Entidade" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="empreiteiro">Empreiteiros</SelectItem>
+            <SelectItem value="cliente">Clientes</SelectItem>
+            <SelectItem value="mediador">Mediadores</SelectItem>
+          </SelectContent>
+        </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]">
             <Filter className="w-4 h-4 mr-2" />
