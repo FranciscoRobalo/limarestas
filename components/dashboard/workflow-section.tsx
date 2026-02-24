@@ -52,7 +52,7 @@ const etapas: Etapa[] = [
   {
     id: 1,
     nome: "Pedido de Informação",
-    descricao: "Receção e análise do pedido inicial do cliente",
+    descricao: "Receção e análise do pedido de informação do cliente",
     icon: FileText,
     tarefas: [
       {
@@ -72,7 +72,7 @@ const etapas: Etapa[] = [
       {
         id: "1.3",
         titulo: "Contactar Cliente",
-        descricao: "Confirmar receção e esclarecer detalhes",
+        descricao: "Confirmar receção e esclarecer dúvidas",
         completada: false,
         pendente: false,
       },
@@ -81,7 +81,7 @@ const etapas: Etapa[] = [
   {
     id: 2,
     nome: "Visita",
-    descricao: "Visita técnica ao local da obra",
+    descricao: "Agendamento e realização da visita técnica",
     icon: Calendar,
     tarefas: [
       {
@@ -94,46 +94,43 @@ const etapas: Etapa[] = [
       {
         id: "2.2",
         titulo: "Realizar Visita Técnica",
-        descricao: "Avaliar o local e documentar observações",
+        descricao: "Efetuar levantamento no local",
         completada: false,
         pendente: false,
       },
       {
         id: "2.3",
-        titulo: "Elaborar Relatório",
-        descricao: "Criar relatório técnico da visita",
+        titulo: "Documentar Visita",
+        descricao: "Registar observações e tirar fotografias",
         completada: false,
-        pendente: true,
-        prazo: "Até 5 dias após a visita",
+        pendente: false,
       },
     ],
   },
   {
     id: 3,
     nome: "Orçamento",
-    descricao: "Receção e apresentação de orçamentos",
+    descricao: "Elaboração e apresentação do orçamento",
     icon: Euro,
     tarefas: [
       {
         id: "3.1",
         titulo: "Solicitar Orçamentos",
-        descricao: "Contactar empreiteiros para propostas",
+        descricao: "Contactar empreiteiros para obter propostas",
         completada: false,
         pendente: false,
       },
       {
         id: "3.2",
-        titulo: "Receber Orçamentos",
-        descricao: "Aguardar até 15 dias pelas propostas",
+        titulo: "Compilar Propostas",
+        descricao: "Organizar e comparar orçamentos recebidos",
         completada: false,
-        pendente: true,
-        prazo: "15 dias",
-        alertas: ["Contactar empresas caso não receba orçamentos em 15 dias"],
+        pendente: false,
       },
       {
         id: "3.3",
         titulo: "Apresentar ao Cliente",
-        descricao: "Enviar orçamentos compilados ao cliente",
+        descricao: "Enviar orçamentos ao cliente para análise",
         completada: false,
         pendente: false,
       },
@@ -148,16 +145,15 @@ const etapas: Etapa[] = [
       {
         id: "4.1",
         titulo: "Aguardar Decisão",
-        descricao: "Estado: Aceite / Recusado / Negociação",
+        descricao: "Acompanhar feedback do cliente sobre o orçamento",
         completada: false,
         pendente: true,
         prazo: "1 semana",
-        alertas: ["Contactar cliente após 1 semana sem resposta"],
       },
       {
         id: "4.2",
-        titulo: "Registar Decisão",
-        descricao: "Documentar a decisão final do cliente",
+        titulo: "Registar Estado",
+        descricao: "Aceite / Recusado / Negociado",
         completada: false,
         pendente: false,
       },
@@ -165,59 +161,43 @@ const etapas: Etapa[] = [
   },
   {
     id: 5,
-    nome: "Adjudicação / Comissão",
-    descricao: "Formalização e pagamento de comissão",
+    nome: "Adjudicação / Comissão Paga",
+    descricao: "Formalização da adjudicação e pagamento de comissão",
     icon: Euro,
     tarefas: [
       {
         id: "5.1",
         titulo: "Confirmar Adjudicação",
-        descricao: "Receber comprovativo de contratação",
-        completada: false,
-        pendente: true,
-        alertas: ["Reforçar pedido caso não receba comprovativo"],
-      },
-      {
-        id: "5.2",
-        titulo: "Solicitar Comissão",
-        descricao: "Submeter pedido de pagamento",
+        descricao: "Receber confirmação formal do cliente",
         completada: false,
         pendente: false,
       },
       {
-        id: "5.3",
-        titulo: "Receber Pagamento",
-        descricao: "Confirmar receção da comissão",
+        id: "5.2",
+        titulo: "Processar Comissão",
+        descricao: "Solicitar e confirmar pagamento de comissão",
         completada: false,
-        pendente: true,
+        pendente: false,
       },
     ],
   },
   {
     id: 6,
     nome: "Obra Concluída",
-    descricao: "Finalização e agradecimento ao cliente",
+    descricao: "Finalização da obra e agradecimento ao cliente",
     icon: CheckCircle2,
     tarefas: [
       {
         id: "6.1",
         titulo: "Confirmar Conclusão",
-        descricao: "Verificar que a obra está concluída",
+        descricao: "Validar que a obra foi concluída com sucesso",
         completada: false,
         pendente: false,
       },
       {
         id: "6.2",
-        titulo: "Enviar Agradecimento",
-        descricao: "Enviar mensagem automática: 'Obrigado por trabalhar connosco.'",
-        completada: false,
-        pendente: false,
-        alertas: ["Mensagem automática será enviada ao cliente"],
-      },
-      {
-        id: "6.3",
-        titulo: "Solicitar Feedback",
-        descricao: "Pedir avaliação do serviço ao cliente",
+        titulo: "Agradecer ao Cliente",
+        descricao: "Enviar mensagem de agradecimento",
         completada: false,
         pendente: false,
       },
@@ -492,17 +472,16 @@ export function WorkflowSection() {
       {etapaSelecionada === 6 && (
         <Card className="bg-green-500/10 border-green-500/30">
           <CardContent className="pt-6">
-            <div className="text-center space-y-4">
+              <div className="text-center space-y-4">
               <div className="inline-flex p-4 bg-green-500/20 rounded-full">
                 <CheckCircle2 className="w-12 h-12 text-green-600" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-green-800 dark:text-green-200 mb-2">
-                  Parabéns pelo Seu Trabalho!
+                  Obra Concluída com Sucesso!
                 </h3>
                 <p className="text-green-700 dark:text-green-300">
-                  Obrigado por todo o empenho na gestão desta obra. A sua dedicação é fundamental para o sucesso dos
-                  nossos projetos.
+                  Obrigado por trabalhar connosco.
                 </p>
               </div>
             </div>

@@ -54,10 +54,10 @@ export default function LoginPage() {
           </Link>
 
           <h1 className="text-4xl xl:text-5xl font-serif text-primary-foreground leading-tight mb-6">
-            Área de Cliente
+            Painel LAT
           </h1>
           <p className="text-lg text-primary-foreground/80 max-w-md">
-            Aceda ao seu painel de controlo para gerir documentos e comunicar com a nossa equipa.
+            Aceda ao painel de controlo para gerir documentos e comunicar com a equipa LAT.
           </p>
         </div>
       </div>

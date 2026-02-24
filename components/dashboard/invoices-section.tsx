@@ -13,6 +13,7 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
+  User,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -33,62 +34,75 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
+type ClientType = "empreiteiro" | "cliente" | "mediador"
+
 interface Invoice {
   id: string
   number: string
   client: string
+  clientType: ClientType
   obra: string
   amount: number
   status: "rascunho" | "enviada" | "paga" | "vencida"
   dueDate: string
   createdAt: string
-  tipoDestinatario: "cliente" | "empreiteiro" | "mediador"
-  }
+}
 
 const mockInvoices: Invoice[] = [
   {
-  id: "1",
-  number: "FAT-2024-001",
-  client: "Maria Santos",
-  obra: "Moradia T4 Cascais",
-  amount: 15000,
-  status: "paga",
-  dueDate: "2024-01-15",
-  createdAt: "2024-01-01",
-  tipoDestinatario: "cliente",
+    id: "1",
+    number: "FAT-2024-001",
+    client: "Maria Santos",
+    clientType: "cliente",
+    obra: "Moradia T4 Cascais",
+    amount: 15000,
+    status: "paga",
+    dueDate: "2024-01-15",
+    createdAt: "2024-01-01",
   },
   {
     id: "2",
     number: "FAT-2024-002",
-client: "João Ferreira",
-  obra: "Remodelação Escritório",
-  amount: 8500,
-  status: "enviada",
-  dueDate: "2024-02-28",
-  createdAt: "2024-02-14",
-  tipoDestinatario: "empreiteiro",
+    client: "Manuel Ferreira",
+    clientType: "empreiteiro",
+    obra: "Remodelação Escritório",
+    amount: 8500,
+    status: "enviada",
+    dueDate: "2024-02-28",
+    createdAt: "2024-02-14",
   },
   {
-  id: "3",
-  number: "FAT-2024-003",
-client: "Ana Rodrigues",
-  obra: "Cozinha e WC",
-  amount: 4200,
-  status: "vencida",
-  dueDate: "2024-01-30",
-  createdAt: "2024-01-16",
-  tipoDestinatario: "cliente",
+    id: "3",
+    number: "FAT-2024-003",
+    client: "Ana Rodrigues",
+    clientType: "mediador",
+    obra: "Cozinha e WC",
+    amount: 4200,
+    status: "vencida",
+    dueDate: "2024-01-30",
+    createdAt: "2024-01-16",
   },
   {
-  id: "4",
-  number: "FAT-2024-004",
-  client: "Pedro Costa",
-  obra: "Reabilitação Edifício",
-  amount: 45000,
-  status: "rascunho",
-  dueDate: "2024-03-15",
-  createdAt: "2024-02-20",
-  tipoDestinatario: "mediador",
+    id: "4",
+    number: "FAT-2024-004",
+    client: "Pedro Costa",
+    clientType: "cliente",
+    obra: "Reabilitação Edifício",
+    amount: 45000,
+    status: "rascunho",
+    dueDate: "2024-03-15",
+    createdAt: "2024-02-20",
+  },
+  {
+    id: "5",
+    number: "FAT-2024-005",
+    client: "Carlos Santos",
+    clientType: "empreiteiro",
+    obra: "Prédio Centro Porto",
+    amount: 22000,
+    status: "paga",
+    dueDate: "2024-03-01",
+    createdAt: "2024-02-15",
   },
 ]
 
@@ -96,15 +110,15 @@ export function InvoicesSection() {
   const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [entityFilter, setEntityFilter] = useState("all")
+  const [clientTypeFilter, setClientTypeFilter] = useState("all")
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-const [newInvoice, setNewInvoice] = useState({
-  client: "",
-  obra: "",
-  amount: "",
-  dueDate: "",
-  description: "",
-  tipoDestinatario: "cliente" as "cliente" | "empreiteiro" | "mediador",
+  const [newInvoice, setNewInvoice] = useState({
+    client: "",
+    clientType: "cliente" as ClientType,
+    obra: "",
+    amount: "",
+    dueDate: "",
+    description: "",
   })
 
   const filteredInvoices = invoices.filter((invoice) => {
@@ -113,8 +127,15 @@ const [newInvoice, setNewInvoice] = useState({
       invoice.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.obra.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === "all" || invoice.status === statusFilter
-    return matchesSearch && matchesStatus
+    const matchesClientType = clientTypeFilter === "all" || invoice.clientType === clientTypeFilter
+    return matchesSearch && matchesStatus && matchesClientType
   })
+
+  const clientTypeLabels: Record<ClientType, string> = {
+    empreiteiro: "Empreiteiro",
+    cliente: "Cliente",
+    mediador: "Mediador",
+  }
 
   const getStatusBadge = (status: Invoice["status"]) => {
     switch (status) {
@@ -152,21 +173,21 @@ const [newInvoice, setNewInvoice] = useState({
   const totalPending = invoices.filter((i) => i.status === "enviada").reduce((sum, i) => sum + i.amount, 0)
   const totalOverdue = invoices.filter((i) => i.status === "vencida").reduce((sum, i) => sum + i.amount, 0)
 
-const handleCreateInvoice = () => {
-  const invoice: Invoice = {
-  id: Date.now().toString(),
-  number: `FAT-2024-${String(invoices.length + 1).padStart(3, "0")}`,
-  client: newInvoice.client,
-  obra: newInvoice.obra,
-  amount: Number.parseFloat(newInvoice.amount),
-  status: "rascunho",
-  dueDate: newInvoice.dueDate,
-  createdAt: new Date().toISOString().split("T")[0],
-  tipoDestinatario: newInvoice.tipoDestinatario,
-  }
-  setInvoices([invoice, ...invoices])
-  setNewInvoice({ client: "", obra: "", amount: "", dueDate: "", description: "", tipoDestinatario: "cliente" })
-  setIsCreateOpen(false)
+  const handleCreateInvoice = () => {
+    const invoice: Invoice = {
+      id: Date.now().toString(),
+      number: `FAT-2024-${String(invoices.length + 1).padStart(3, "0")}`,
+      client: newInvoice.client,
+      clientType: newInvoice.clientType,
+      obra: newInvoice.obra,
+      amount: Number.parseFloat(newInvoice.amount),
+      status: "rascunho",
+      dueDate: newInvoice.dueDate,
+      createdAt: new Date().toISOString().split("T")[0],
+    }
+    setInvoices([invoice, ...invoices])
+    setNewInvoice({ client: "", clientType: "cliente", obra: "", amount: "", dueDate: "", description: "" })
+    setIsCreateOpen(false)
   }
 
   return (
@@ -187,41 +208,39 @@ const handleCreateInvoice = () => {
               <DialogTitle>Criar Nova Fatura</DialogTitle>
               <DialogDescription>Preencha os dados da fatura</DialogDescription>
             </DialogHeader>
-<div className="space-y-4 py-4">
-  <div className="space-y-2">
-  <Label>Tipo de Destinatário</Label>
-  <Select 
-  value={newInvoice.tipoDestinatario} 
-  onValueChange={(value: "cliente" | "empreiteiro" | "mediador") => 
-    setNewInvoice({ ...newInvoice, tipoDestinatario: value })
-  }
-  >
-  <SelectTrigger>
-  <SelectValue placeholder="Selecione o tipo" />
-  </SelectTrigger>
-  <SelectContent>
-  <SelectItem value="cliente">Cliente</SelectItem>
-  <SelectItem value="empreiteiro">Empreiteiro</SelectItem>
-  <SelectItem value="mediador">Mediador</SelectItem>
-  </SelectContent>
-  </Select>
-  </div>
-  <div className="space-y-2">
-  <Label>Nome do {newInvoice.tipoDestinatario === "cliente" ? "Cliente" : newInvoice.tipoDestinatario === "empreiteiro" ? "Empreiteiro" : "Mediador"}</Label>
-  <Input
-  value={newInvoice.client}
-  onChange={(e) => setNewInvoice({ ...newInvoice, client: e.target.value })}
-  placeholder={`Nome do ${newInvoice.tipoDestinatario}`}
-  />
-  </div>
-  <div className="space-y-2">
-  <Label>Obra</Label>
-  <Input
-  value={newInvoice.obra}
-  onChange={(e) => setNewInvoice({ ...newInvoice, obra: e.target.value })}
-  placeholder="Nome da obra"
-  />
-  </div>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Tipo de Entidade</Label>
+                <Select
+                  value={newInvoice.clientType}
+                  onValueChange={(value) => setNewInvoice({ ...newInvoice, clientType: value as ClientType })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="empreiteiro">Empreiteiro</SelectItem>
+                    <SelectItem value="cliente">Cliente</SelectItem>
+                    <SelectItem value="mediador">Mediador</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Nome</Label>
+                <Input
+                  value={newInvoice.client}
+                  onChange={(e) => setNewInvoice({ ...newInvoice, client: e.target.value })}
+                  placeholder="Nome do empreiteiro, cliente ou mediador"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Obra</Label>
+                <Input
+                  value={newInvoice.obra}
+                  onChange={(e) => setNewInvoice({ ...newInvoice, obra: e.target.value })}
+                  placeholder="Nome da obra"
+                />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Valor (EUR)</Label>
@@ -302,8 +321,9 @@ const handleCreateInvoice = () => {
             className="pl-10"
           />
         </div>
-        <Select value={entityFilter} onValueChange={setEntityFilter}>
+        <Select value={clientTypeFilter} onValueChange={setClientTypeFilter}>
           <SelectTrigger className="w-[200px]">
+            <User className="w-4 h-4 mr-2" />
             <SelectValue placeholder="Tipo de Entidade" />
           </SelectTrigger>
           <SelectContent>
@@ -336,6 +356,7 @@ const handleCreateInvoice = () => {
               <TableRow>
                 <TableHead>Nº Fatura</TableHead>
                 <TableHead>Cliente</TableHead>
+                <TableHead>Tipo</TableHead>
                 <TableHead className="hidden md:table-cell">Obra</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Estado</TableHead>
@@ -348,6 +369,15 @@ const handleCreateInvoice = () => {
                 <TableRow key={invoice.id}>
                   <TableCell className="font-medium">{invoice.number}</TableCell>
                   <TableCell>{invoice.client}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={
+                      invoice.clientType === "empreiteiro" ? "border-purple-500 text-purple-600" :
+                      invoice.clientType === "mediador" ? "border-blue-500 text-blue-600" :
+                      "border-green-500 text-green-600"
+                    }>
+                      {clientTypeLabels[invoice.clientType]}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="hidden md:table-cell">{invoice.obra}</TableCell>
                   <TableCell>{formatCurrency(invoice.amount)}</TableCell>
                   <TableCell>{getStatusBadge(invoice.status)}</TableCell>
@@ -362,60 +392,15 @@ const handleCreateInvoice = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => alert(`Detalhes da fatura ${invoice.number}\n\nCliente: ${invoice.client}\nObra: ${invoice.obra}\nValor: ${formatCurrency(invoice.amount)}\nEstado: ${invoice.status}`)}>
+                        <DropdownMenuItem>
                           <Eye className="w-4 h-4 mr-2" /> Ver
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {
-                          const emailSubject = encodeURIComponent(`Fatura ${invoice.number} - Limarestas`)
-                          const emailBody = encodeURIComponent(
-                            `Exmo(a). Sr(a). ${invoice.client},\n\n` +
-                            `Segue em anexo a fatura ${invoice.number} relativa à obra "${invoice.obra}".\n\n` +
-                            `Valor: ${formatCurrency(invoice.amount)}\n` +
-                            `Data de vencimento: ${new Date(invoice.dueDate).toLocaleDateString("pt-PT")}\n\n` +
-                            `Com os melhores cumprimentos,\n` +
-                            `Equipa Limarestas`
-                          )
-                          window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank')
-                          setInvoices(prev => prev.map(i => i.id === invoice.id ? { ...i, status: "enviada" as const } : i))
-                        }}>
+                        <DropdownMenuItem>
                           <Send className="w-4 h-4 mr-2" /> Enviar
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {
-                          // Generate PDF content
-                          const pdfContent = `
-FATURA
-------
-Número: ${invoice.number}
-Data: ${new Date(invoice.createdAt).toLocaleDateString("pt-PT")}
-Vencimento: ${new Date(invoice.dueDate).toLocaleDateString("pt-PT")}
-
-CLIENTE
--------
-${invoice.client}
-
-OBRA
-----
-${invoice.obra}
-
-TOTAL: ${formatCurrency(invoice.amount)}
-                          `
-                          const blob = new Blob([pdfContent], { type: 'text/plain' })
-                          const url = URL.createObjectURL(blob)
-                          const a = document.createElement('a')
-                          a.href = url
-                          a.download = `${invoice.number}.txt`
-                          a.click()
-                          URL.revokeObjectURL(url)
-                        }}>
-                          <Download className="w-4 h-4 mr-2" /> Download
+                        <DropdownMenuItem>
+                          <Download className="w-4 h-4 mr-2" /> Download PDF
                         </DropdownMenuItem>
-                        {invoice.status === "enviada" && (
-                          <DropdownMenuItem onClick={() => {
-                            setInvoices(prev => prev.map(i => i.id === invoice.id ? { ...i, status: "paga" as const } : i))
-                          }}>
-                            <CheckCircle className="w-4 h-4 mr-2" /> Marcar como Paga
-                          </DropdownMenuItem>
-                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
