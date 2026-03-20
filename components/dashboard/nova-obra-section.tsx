@@ -206,7 +206,10 @@ export function NovaObraSection() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            {stepTitles[currentStep - 1].icon && <stepTitles[currentStep - 1].icon className="w-5 h-5 text-primary" />}
+            {(() => {
+              const StepIcon = stepTitles[currentStep - 1].icon
+              return StepIcon ? <StepIcon className="w-5 h-5 text-primary" /> : null
+            })()}
             {stepTitles[currentStep - 1].title}
           </CardTitle>
           <CardDescription>
