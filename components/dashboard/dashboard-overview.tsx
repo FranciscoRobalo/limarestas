@@ -201,7 +201,19 @@ export function DashboardOverview() {
 
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4">Ferramentas de Gestão</h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+              <Link href="/dashboard?tab=nova-obra">
+                <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full border-primary/30">
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                      <PlusCircle className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-base">Nova Obra</CardTitle>
+                    <CardDescription>Registar nova obra.</CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+              
               <Link href="/dashboard?tab=invoices">
                 <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
                   <CardHeader>
@@ -238,14 +250,14 @@ export function DashboardOverview() {
                 </Card>
               </Link>
 
-              <Link href="/dashboard?tab=calendar">
+              <Link href="/dashboard?tab=analytics">
                 <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
                   <CardHeader>
-                    <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
-                      <CalendarDays className="w-6 h-6 text-purple-600" />
+                    <div className="w-12 h-12 rounded-lg bg-indigo-500/10 flex items-center justify-center mb-4 group-hover:bg-indigo-500/20 transition-colors">
+                      <BarChart3 className="w-6 h-6 text-indigo-600" />
                     </div>
-                    <CardTitle className="text-base">Calendário</CardTitle>
-                    <CardDescription>Visualize agenda de visitas e eventos.</CardDescription>
+                    <CardTitle className="text-base">Relatórios</CardTitle>
+                    <CardDescription>Estatísticas e análises.</CardDescription>
                   </CardHeader>
                 </Card>
               </Link>
@@ -298,7 +310,21 @@ export function DashboardOverview() {
       {/* Quick actions for all users */}
       <div>
         <h3 className="text-lg font-semibold text-foreground mb-4">Ações rápidas</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {(isAdmin || user?.role === "cliente") && (
+            <Link href="/dashboard?tab=nova-obra">
+              <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full border-primary/30">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <PlusCircle className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-base">Nova Obra</CardTitle>
+                  <CardDescription>Registar um novo pedido de obra.</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          )}
+          
           <Link href="/dashboard?tab=contas">
             <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
               <CardHeader>

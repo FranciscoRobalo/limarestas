@@ -17,13 +17,24 @@ import { CalendarSection } from "./calendar-section"
 import { FeedbackSection } from "./feedback-section"
 import { EmpreiteirosSection } from "./empreiteiros-section"
 import { ConsultaContasSection } from "./consulta-contas-section"
+import { NovaObraSection } from "./nova-obra-section"
+import { AnalyticsSection } from "./analytics-section"
 
 export function DashboardContent() {
   const searchParams = useSearchParams()
   const tab = searchParams.get("tab")
   const { user } = useAuth()
 
+  // Nova Obra - Admin and Cliente
+  if (tab === "nova-obra" && (user?.role === "admin" || user?.role === "cliente")) {
+    return <NovaObraSection />
+  }
+
   // Admin only sections
+  if (tab === "analytics" && user?.role === "admin") {
+    return <AnalyticsSection />
+  }
+
   if (tab === "calendar" && user?.role === "admin") {
     return <CalendarSection />
   }

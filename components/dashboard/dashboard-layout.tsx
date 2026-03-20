@@ -46,9 +46,13 @@ const navigation: NavItem[] = [
   // Painel - todos os utilizadores
   { name: "Painel", href: "/dashboard", icon: LayoutDashboard, id: "dashboard", roles: ["admin", "tecnico", "cliente", "construtor", "empreiteiro"] },
   
+  // Nova Obra - Admin e Cliente
+  { name: "Nova Obra", href: "/dashboard?tab=nova-obra", icon: PlusCircle, id: "nova-obra", roles: ["admin", "cliente"] },
+  
   // Admin only
   { name: "Calendário", href: "/dashboard?tab=calendar", icon: CalendarDays, id: "calendar", roles: ["admin"] },
   { name: "Gestão de Obras", href: "/dashboard?tab=workflow", icon: GitBranch, id: "workflow", roles: ["admin"] },
+  { name: "Relatórios", href: "/dashboard?tab=analytics", icon: BarChart3, id: "analytics", roles: ["admin"] },
   { name: "Aprovação de Orçamentos", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao", roles: ["admin"] },
   { name: "Lista de Empreiteiros", href: "/dashboard?tab=empreiteiros", icon: Users, id: "empreiteiros", roles: ["admin"] },
   { name: "Faturação", href: "/dashboard?tab=invoices", icon: Receipt, id: "invoices", roles: ["admin"] },
