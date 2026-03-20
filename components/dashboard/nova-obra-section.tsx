@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Building, MapPin, Calendar, FileText, Euro, User, Phone, Mail, Upload, X, Home, Ruler, Clock, AlertCircle } from "lucide-react"
+import { CheckCircle2, Building, MapPin, Calendar, FileText, Euro, User, Phone, Mail, Upload, X, Home, Ruler, Clock, AlertCircle, type LucideIcon } from "lucide-react"
 import { useObras } from "@/hooks/use-obras"
 
 interface ObraFormData {
@@ -145,7 +145,7 @@ export function NovaObraSection() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const stepTitles = [
+  const stepTitles: Array<{ step: number; title: string; icon: LucideIcon }> = [
     { step: 1, title: "Dados do Cliente", icon: User },
     { step: 2, title: "Informação da Obra", icon: Building },
     { step: 3, title: "Detalhes Técnicos", icon: Ruler },
@@ -176,39 +176,42 @@ export function NovaObraSection() {
 
       {/* Progress Steps */}
       <div className="flex items-center justify-between max-w-2xl mx-auto mb-8">
-        {stepTitles.map((s, index) => (
-          <div key={s.step} className="flex items-center">
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
-                  currentStep >= s.step
-                    ? "bg-primary border-primary text-primary-foreground"
-                    : "border-muted-foreground/30 text-muted-foreground"
-                }`}
-              >
-                {currentStep > s.step ? (
-                  <CheckCircle2 className="w-5 h-5" />
-                ) : (
-                  <s.icon className="w-5 h-5" />
-                )}
+        {stepTitles.map((s, index) => {
+          const StepIcon = s.icon
+          return (
+            <div key={s.step} className="flex items-center">
+              <div className="flex flex-col items-center">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
+                    currentStep >= s.step
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "border-muted-foreground/30 text-muted-foreground"
+                  }`}
+                >
+                  {currentStep > s.step ? (
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : (
+                    <StepIcon className="w-5 h-5" />
+                  )}
+                </div>
+                <span className={`text-xs mt-2 ${currentStep >= s.step ? "text-primary font-medium" : "text-muted-foreground"}`}>
+                  {s.title}
+                </span>
               </div>
-              <span className={`text-xs mt-2 ${currentStep >= s.step ? "text-primary font-medium" : "text-muted-foreground"}`}>
-                {s.title}
-              </span>
+              {index < stepTitles.length - 1 && (
+                <div className={`w-12 sm:w-24 h-0.5 mx-2 ${currentStep > s.step ? "bg-primary" : "bg-muted-foreground/30"}`} />
+              )}
             </div>
-            {index < stepTitles.length - 1 && (
-              <div className={`w-12 sm:w-24 h-0.5 mx-2 ${currentStep > s.step ? "bg-primary" : "bg-muted-foreground/30"}`} />
-            )}
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {(() => {
-              const StepIcon = stepTitles[currentStep - 1].icon
-              return StepIcon ? <StepIcon className="w-5 h-5 text-primary" /> : null
+              const HeaderIcon = stepTitles[currentStep - 1].icon
+              return <HeaderIcon className="w-5 h-5 text-primary" />
             })()}
             {stepTitles[currentStep - 1].title}
           </CardTitle>
