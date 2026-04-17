@@ -300,8 +300,8 @@ export function BudgetApprovalSection() {
         // Merge with existing budgets (keep mock data for demo)
         setBudgets([...mockBudgets, ...moapBudgets])
       }
-    } catch (error) {
-      console.error("[Budget Approval] Failed to fetch budgets:", error)
+    } catch {
+      // Silent fail - will use mock data
     } finally {
       setIsLoading(false)
     }
@@ -315,12 +315,9 @@ export function BudgetApprovalSection() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "sync_materials" }),
       })
-      const result = await response.json()
-      if (result.success) {
-        console.log("[Budget Approval] Materials synced successfully")
-      }
-    } catch (error) {
-      console.error("[Budget Approval] Failed to sync materials:", error)
+      await response.json()
+    } catch {
+      // Silent fail - sync is optional
     }
   }
 
@@ -348,8 +345,7 @@ export function BudgetApprovalSection() {
       })
       const result = await response.json()
       return result.success
-    } catch (error) {
-      console.error("[Budget Approval] Failed to submit to MOAP:", error)
+    } catch {
       return false
     }
   }
