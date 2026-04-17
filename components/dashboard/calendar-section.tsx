@@ -1,10 +1,14 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, User } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, User, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useVisitas } from "@/hooks/use-visitas"
 
 const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
@@ -82,9 +86,30 @@ const mockEvents: CalendarEvent[] = [
   },
 ]
 
+interface NewEventForm {
+  title: string
+  date: string
+  time: string
+  type: CalendarEvent["type"]
+  location: string
+  client: string
+}
+
+const initialEventForm: NewEventForm = {
+  title: "",
+  date: "",
+  time: "",
+  type: "visita",
+  location: "",
+  client: "",
+}
+
 export function CalendarSection() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [events, setEvents] = useState<CalendarEvent[]>(mockEvents)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [newEvent, setNewEvent] = useState<NewEventForm>(initialEventForm)
   const { visitas } = useVisitas()
 
   const allEvents = useMemo(() => {
@@ -96,8 +121,8 @@ export function CalendarSection() {
       type: "visita" as const,
       location: v.obraId,
     }))
-    return [...mockEvents, ...visitaEvents]
-  }, [visitas])
+    return [...events, ...visitaEvents]
+  }, [visitas, events])
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()
@@ -137,6 +162,37 @@ export function CalendarSection() {
   const goToToday = () => {
     setCurrentDate(new Date())
     setSelectedDate(new Date())
+  }
+
+  const openNewEventDialog = (date?: Date) => {
+    const targetDate = date || selectedDate || new Date()
+    setNewEvent({
+      ...initialEventForm,
+      date: targetDate.toISOString().split("T")[0],
+    })
+    setIsDialogOpen(true)
+  }
+
+  const handleCreateEvent = () => {
+    if (!newEvent.title || !newEvent.date || !newEvent.time) return
+
+    const event: CalendarEvent = {
+      id: `event-${Date.now()}`,
+      title: newEvent.title,
+      date: newEvent.date,
+      time: newEvent.time,
+      type: newEvent.type,
+      location: newEvent.location || undefined,
+      client: newEvent.client || undefined,
+    }
+
+    setEvents((prev) => [...prev, event])
+    setNewEvent(initialEventForm)
+    setIsDialogOpen(false)
+  }
+
+  const handleDeleteEvent = (eventId: string) => {
+    setEvents((prev) => prev.filter((e) => e.id !== eventId))
   }
 
   const isToday = (date: Date) => {
@@ -185,7 +241,7 @@ export function CalendarSection() {
           <Button variant="outline" onClick={goToToday}>
             Hoje
           </Button>
-          <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
+          <Button onClick={() => openNewEventDialog()} className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <Plus className="w-4 h-4 mr-2" /> Novo Evento
           </Button>
         </div>
@@ -287,8 +343,16 @@ export function CalendarSection() {
             {selectedDateEvents.length > 0 ? (
               <div className="space-y-4">
                 {selectedDateEvents.map((event) => (
-                  <div key={event.id} className="p-4 rounded-lg bg-secondary/50 space-y-2">
-                    <div className="flex items-start justify-between">
+                  <div key={event.id} className="p-4 rounded-lg bg-secondary/50 space-y-2 group relative">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleDeleteEvent(event.id)}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                    <div className="flex items-start justify-between pr-8">
                       <h4 className="font-medium text-foreground">{event.title}</h4>
                       <Badge variant="secondary" className={`${getEventTypeColor(event.type)} text-white`}>
                         {event.type}
@@ -318,7 +382,7 @@ export function CalendarSection() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <p>Nenhum evento para este dia</p>
-                <Button variant="link" className="mt-2 text-accent">
+                <Button variant="link" className="mt-2 text-accent" onClick={() => openNewEventDialog(selectedDate || undefined)}>
                   Adicionar evento
                 </Button>
               </div>
@@ -326,6 +390,93 @@ export function CalendarSection() {
           </CardContent>
         </Card>
       </div>
+
+      {/* New Event Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Criar Novo Evento</DialogTitle>
+            <DialogDescription>
+              Adicione um novo evento ao calendário.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Título *</Label>
+              <Input
+                id="title"
+                placeholder="Ex: Visita Técnica - Lisboa"
+                value={newEvent.title}
+                onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="date">Data *</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={newEvent.date}
+                  onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="time">Hora *</Label>
+                <Input
+                  id="time"
+                  type="time"
+                  value={newEvent.time}
+                  onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="type">Tipo de Evento *</Label>
+              <Select value={newEvent.type} onValueChange={(value: CalendarEvent["type"]) => setNewEvent({ ...newEvent, type: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="visita">Visita</SelectItem>
+                  <SelectItem value="reuniao">Reuniao</SelectItem>
+                  <SelectItem value="entrega">Entrega</SelectItem>
+                  <SelectItem value="prazo">Prazo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="location">Localização</Label>
+              <Input
+                id="location"
+                placeholder="Ex: Lisboa, Porto, Cascais..."
+                value={newEvent.location}
+                onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="client">Cliente</Label>
+              <Input
+                id="client"
+                placeholder="Nome do cliente"
+                value={newEvent.client}
+                onChange={(e) => setNewEvent({ ...newEvent, client: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleCreateEvent}
+              disabled={!newEvent.title || !newEvent.date || !newEvent.time}
+              className="bg-accent hover:bg-accent/90"
+            >
+              Criar Evento
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
