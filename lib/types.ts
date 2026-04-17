@@ -142,3 +142,44 @@ export interface PedidoPublicidade {
   dataSubmissao: string
   status: "pendente" | "aprovado" | "rejeitado" | "pago"
 }
+
+// Budget types for MOAP integration
+export interface BudgetMaterial {
+  id: string
+  name: string
+  unit: string
+  price: number
+  category: string
+  subcategory?: string
+  supplier?: string
+}
+
+export interface BudgetItem {
+  id: string
+  materialId: string
+  materialName: string
+  unit: string
+  quantity: number
+  unitPrice: number
+  category: string
+  margin?: number
+  totalPrice: number
+}
+
+export interface Budget {
+  id: string
+  obraId: string
+  obraNome: string
+  clienteNome: string
+  clienteEmail: string
+  items: BudgetItem[]
+  subtotal: number
+  marginPercentage: number
+  marginAmount: number
+  total: number
+  status: "pendente" | "em-analise" | "aprovado" | "rejeitado" | "revisao"
+  dataSubmissao: string
+  dataAprovacao?: string
+  observacoes?: string
+  aprovadoPor?: string
+}

@@ -54,6 +54,7 @@ const navigation: NavItem[] = [
   { name: "Gestão de Obras", href: "/dashboard?tab=workflow", icon: GitBranch, id: "workflow", roles: ["admin"] },
   { name: "Relatórios", href: "/dashboard?tab=analytics", icon: BarChart3, id: "analytics", roles: ["admin"] },
   { name: "Aprovação de Orçamentos", href: "/dashboard?tab=validacao", icon: ClipboardCheck, id: "validacao", roles: ["admin"] },
+  { name: "Orçamentos Detalhados", href: "/dashboard?tab=budgets", icon: Receipt, id: "budgets", roles: ["admin"] },
   { name: "Lista de Empreiteiros", href: "/dashboard?tab=empreiteiros", icon: Users, id: "empreiteiros", roles: ["admin"] },
   { name: "Faturação", href: "/dashboard?tab=invoices", icon: Receipt, id: "invoices", roles: ["admin"] },
   { name: "Feedback de Clientes", href: "/dashboard?tab=feedback", icon: Star, id: "feedback", roles: ["admin"] },

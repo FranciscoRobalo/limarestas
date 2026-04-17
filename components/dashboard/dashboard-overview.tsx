@@ -201,7 +201,7 @@ export function DashboardOverview() {
 
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-4">Ferramentas de Gestão</h3>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
               <Link href="/dashboard?tab=nova-obra">
                 <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full border-primary/30">
                   <CardHeader>
@@ -210,6 +210,18 @@ export function DashboardOverview() {
                     </div>
                     <CardTitle className="text-base">Nova Obra</CardTitle>
                     <CardDescription>Registar nova obra.</CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              <Link href="/dashboard?tab=budgets">
+                <Card className="hover:border-accent/50 hover:shadow-md transition-all cursor-pointer group h-full">
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-lg bg-yellow-500/10 flex items-center justify-center mb-4 group-hover:bg-yellow-500/20 transition-colors">
+                      <ClipboardCheck className="w-6 h-6 text-yellow-600" />
+                    </div>
+                    <CardTitle className="text-base">Orçamentos</CardTitle>
+                    <CardDescription>Aprovar orçamentos com margens.</CardDescription>
                   </CardHeader>
                 </Card>
               </Link>

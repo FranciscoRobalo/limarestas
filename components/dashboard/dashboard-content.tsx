@@ -19,6 +19,7 @@ import { EmpreiteirosSection } from "./empreiteiros-section"
 import { ConsultaContasSection } from "./consulta-contas-section"
 import { NovaObraSection } from "./nova-obra-section"
 import { AnalyticsSection } from "./analytics-section"
+import { BudgetApprovalSection } from "./budget-approval-section"
 
 export function DashboardContent() {
   const searchParams = useSearchParams()
@@ -33,6 +34,10 @@ export function DashboardContent() {
   // Admin only sections
   if (tab === "analytics" && user?.role === "admin") {
     return <AnalyticsSection />
+  }
+
+  if (tab === "budgets" && user?.role === "admin") {
+    return <BudgetApprovalSection />
   }
 
   if (tab === "calendar" && user?.role === "admin") {
