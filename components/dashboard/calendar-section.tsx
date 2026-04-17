@@ -33,27 +33,52 @@ interface CalendarEvent {
   client?: string
 }
 
+// Generate dates relative to current date
+const getRelativeDate = (daysFromNow: number): string => {
+  const date = new Date()
+  date.setDate(date.getDate() + daysFromNow)
+  return date.toISOString().split("T")[0]
+}
+
 const mockEvents: CalendarEvent[] = [
   {
     id: "1",
     title: "Visita Técnica - Cascais",
-    date: "2024-02-15",
+    date: getRelativeDate(2),
     time: "10:00",
     type: "visita",
     location: "Cascais",
     client: "Maria Santos",
   },
-  { id: "2", title: "Reunião Orçamento", date: "2024-02-15", time: "14:00", type: "reuniao", client: "João Ferreira" },
-  { id: "3", title: "Entrega Projeto", date: "2024-02-18", time: "09:00", type: "entrega", client: "Ana Rodrigues" },
-  { id: "4", title: "Prazo Orçamento", date: "2024-02-20", time: "18:00", type: "prazo" },
+  { id: "2", title: "Reunião Orçamento", date: getRelativeDate(2), time: "14:00", type: "reuniao", client: "João Ferreira" },
+  { id: "3", title: "Entrega Projeto", date: getRelativeDate(5), time: "09:00", type: "entrega", client: "Ana Rodrigues" },
+  { id: "4", title: "Prazo Orçamento", date: getRelativeDate(7), time: "18:00", type: "prazo" },
   {
     id: "5",
     title: "Visita Obra Porto",
-    date: "2024-02-22",
+    date: getRelativeDate(10),
     time: "11:00",
     type: "visita",
     location: "Porto",
     client: "Pedro Costa",
+  },
+  {
+    id: "6",
+    title: "Reunião Cliente Lisboa",
+    date: getRelativeDate(0),
+    time: "15:00",
+    type: "reuniao",
+    location: "Lisboa",
+    client: "Carlos Mendes",
+  },
+  {
+    id: "7",
+    title: "Visita Inicial - Sintra",
+    date: getRelativeDate(1),
+    time: "09:30",
+    type: "visita",
+    location: "Sintra",
+    client: "Sofia Almeida",
   },
 ]
 
