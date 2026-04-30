@@ -112,6 +112,8 @@ export function CalendarSection() {
   const [newEvent, setNewEvent] = useState<NewEventForm>(initialEventForm)
   const { visitas } = useVisitas()
 
+  console.log("[v0] CalendarSection render - isDialogOpen:", isDialogOpen)
+
   const allEvents = useMemo(() => {
     const visitaEvents: CalendarEvent[] = visitas.map((v) => ({
       id: v.id,
@@ -165,16 +167,23 @@ export function CalendarSection() {
   }
 
   const openNewEventDialog = (date?: Date) => {
+    console.log("[v0] openNewEventDialog called with date:", date)
     const targetDate = date || selectedDate || new Date()
+    console.log("[v0] targetDate:", targetDate)
     setNewEvent({
       ...initialEventForm,
       date: targetDate.toISOString().split("T")[0],
     })
+    console.log("[v0] Setting isDialogOpen to true")
     setIsDialogOpen(true)
   }
 
   const handleCreateEvent = () => {
-    if (!newEvent.title || !newEvent.date || !newEvent.time) return
+    console.log("[v0] handleCreateEvent called with newEvent:", newEvent)
+    if (!newEvent.title || !newEvent.date || !newEvent.time) {
+      console.log("[v0] Validation failed - missing required fields")
+      return
+    }
 
     const event: CalendarEvent = {
       id: `event-${Date.now()}`,
@@ -186,6 +195,7 @@ export function CalendarSection() {
       client: newEvent.client || undefined,
     }
 
+    console.log("[v0] Creating event:", event)
     setEvents((prev) => [...prev, event])
     setNewEvent(initialEventForm)
     setIsDialogOpen(false)
