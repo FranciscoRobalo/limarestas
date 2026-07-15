@@ -20,6 +20,7 @@ import { ConsultaContasSection } from "./consulta-contas-section"
 import { NovaObraSection } from "./nova-obra-section"
 import { AnalyticsSection } from "./analytics-section"
 import { BudgetApprovalSection } from "./budget-approval-section"
+import { PedidoOrcamentoSection } from "./pedido-orcamento-section"
 
 export function DashboardContent() {
   const searchParams = useSearchParams()
@@ -93,10 +94,14 @@ export function DashboardContent() {
   }
 
   if (tab === "pedido-orcamento" && user?.role === "empreiteiro") {
-    return <DocumentsSection /> // Placeholder for now
+    return <PedidoOrcamentoSection />
   }
 
   // Common sections
+  if (tab === "documents") {
+    return <DocumentsSection />
+  }
+
   if (tab === "contas") {
     return <ConsultaContasSection />
   }
