@@ -5,7 +5,39 @@ import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/contexts/language-context"
 
 export function AboutSection() {
-  const { t } = useLanguage()
+  const { language } = useLanguage()
+
+  const texts = {
+    pt: {
+      label: "Sobre nós",
+      title: "O projeto é seu. O trabalho é nosso.",
+      description: "A LAT – Limarestas poupa-lhe preocupações, dinheiro e tempo.",
+      secondary: "Fazemos a ponte entre o seu projeto e a solução certa — sem compromisso.",
+      cta: "Contacte-nos",
+      projects: "Projetos realizados",
+      partners: "Empresas parceiras",
+    },
+    en: {
+      label: "About us",
+      title: "The project is yours. The work is ours.",
+      description: "LAT – Limarestas saves you worries, money and time.",
+      secondary: "We bridge the gap between your project and the right solution — no commitment.",
+      cta: "Contact us",
+      projects: "Projects completed",
+      partners: "Partner companies",
+    },
+    es: {
+      label: "Sobre nosotros",
+      title: "El proyecto es tuyo. El trabajo es nuestro.",
+      description: "LAT – Limarestas le ahorra preocupaciones, dinero y tiempo.",
+      secondary: "Hacemos de puente entre su proyecto y la solución adecuada — sin compromiso.",
+      cta: "Contáctenos",
+      projects: "Proyectos realizados",
+      partners: "Empresas asociadas",
+    },
+  }
+
+  const txt = texts[language]
 
   return (
     <section id="sobre" className="py-20 md:py-32 bg-card">
@@ -24,26 +56,29 @@ export function AboutSection() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <p className="text-3xl font-bold text-primary">100+</p>
-                  <p className="text-sm text-muted-foreground">{t("about.projects")}</p>
+                  <p className="text-sm text-muted-foreground">{txt.projects}</p>
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-accent">50+</p>
-                  <p className="text-sm text-muted-foreground">{t("about.partners")}</p>
+                  <p className="text-sm text-muted-foreground">{txt.partners}</p>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="space-y-6 order-1 lg:order-2">
-            <span className="text-sm font-semibold text-accent uppercase tracking-wider">{t("about.label")}</span>
+            <span className="text-sm font-semibold text-accent uppercase tracking-wider">{txt.label}</span>
             <h2 className="text-3xl md:text-4xl font-serif font-medium text-foreground text-balance">
-              {t("about.title")}
+              {txt.title}
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              {t("about.description")}
+            <p className="text-lg text-muted-foreground leading-relaxed font-medium">
+              {txt.description}
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              {txt.secondary}
             </p>
             <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href="#contacto">{t("about.cta")}</Link>
+              <Link href="#contacto">{txt.cta}</Link>
             </Button>
           </div>
         </div>

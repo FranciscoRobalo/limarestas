@@ -1,8 +1,8 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 
-type Language = "pt" | "en" | "es"
+export type Language = "pt" | "en" | "es"
 
 interface Translations {
   [key: string]: {
@@ -12,22 +12,21 @@ interface Translations {
   }
 }
 
-const translations: Translations = {
+export const translations: Translations = {
   // Navigation
-  "nav.inicio": { pt: "Início", en: "Home", es: "Inicio" },
-  "nav.sobre": { pt: "Sobre", en: "About", es: "Sobre" },
-  "nav.servicos": { pt: "Serviços", en: "Services", es: "Servicios" },
+  "nav.home": { pt: "Início", en: "Home", es: "Inicio" },
+  "nav.about": { pt: "Sobre", en: "About", es: "Sobre" },
+  "nav.services": { pt: "Serviços", en: "Services", es: "Servicios" },
   "nav.portfolio": { pt: "Portfólio", en: "Portfolio", es: "Portafolio" },
-  "nav.calculadora": { pt: "Calculadora", en: "Calculator", es: "Calculadora" },
-  "nav.contacto": { pt: "Contacto", en: "Contact", es: "Contacto" },
-  "nav.equipa": { pt: "Equipa", en: "Team", es: "Equipo" },
+  "nav.calculator": { pt: "Calculadora", en: "Calculator", es: "Calculadora" },
+  "nav.team": { pt: "Equipa", en: "Team", es: "Equipo" },
   "nav.faq": { pt: "FAQ", en: "FAQ", es: "FAQ" },
-  "nav.entrar": { pt: "Entrar", en: "Login", es: "Entrar" },
-  "nav.fale_connosco": { pt: "Fale connosco", en: "Contact us", es: "Contáctenos" },
-  "nav.terminar_sessao": { pt: "Terminar sessão", en: "Logout", es: "Cerrar sesión" },
-  "nav.idioma": { pt: "Idioma", en: "Language", es: "Idioma" },
+  "nav.contact": { pt: "Contacto", en: "Contact", es: "Contacto" },
+  "nav.joinUs": { pt: "Junte-se a Nós", en: "Join Us", es: "Únete" },
+  "nav.login": { pt: "Entrar", en: "Login", es: "Entrar" },
+  "nav.talkToUs": { pt: "Fale connosco", en: "Talk to us", es: "Hable con nosotros" },
 
-  // Hero
+  // Hero Section
   "hero.title": {
     pt: "Encontramos a equipa certa para qualquer projeto de construção.",
     en: "We find the right team for any construction project.",
@@ -38,10 +37,10 @@ const translations: Translations = {
     en: "The project is yours, the work is ours.",
     es: "El proyecto es tuyo, el trabajo es nuestro.",
   },
-  "hero.cta_primary": { pt: "Fale connosco", en: "Contact us", es: "Contáctenos" },
-  "hero.cta_secondary": { pt: "Contacte-nos", en: "Get in touch", es: "Contáctenos" },
+  "hero.cta.contact": { pt: "Fale connosco", en: "Talk to us", es: "Hable con nosotros" },
+  "hero.cta.about": { pt: "Contacte-nos", en: "Contact us", es: "Contáctenos" },
 
-  // About
+  // About Section
   "about.label": { pt: "Sobre nós", en: "About us", es: "Sobre nosotros" },
   "about.title": {
     pt: "O projeto é seu. O trabalho é nosso.",
@@ -50,118 +49,88 @@ const translations: Translations = {
   },
   "about.description": {
     pt: "A LAT – Limarestas poupa-lhe preocupações, dinheiro e tempo.",
-    en: "LAT - Limarestas saves you worries, money and time.",
-    es: "LAT - Limarestas le ahorra preocupaciones, dinero y tiempo.",
+    en: "LAT – Limarestas saves you worries, money and time.",
+    es: "LAT – Limarestas le ahorra preocupaciones, dinero y tiempo.",
   },
   "about.cta": { pt: "Contacte-nos", en: "Contact us", es: "Contáctenos" },
-  "about.projects": { pt: "Projetos realizados", en: "Completed projects", es: "Proyectos realizados" },
+  "about.projects": { pt: "Projetos realizados", en: "Projects completed", es: "Proyectos realizados" },
   "about.partners": { pt: "Empresas parceiras", en: "Partner companies", es: "Empresas asociadas" },
 
-  // Benefits
+  // Benefits Section
   "benefits.label": { pt: "Porquê a Limarestas", en: "Why Limarestas", es: "Por qué Limarestas" },
-  "benefits.title": { pt: "Os nossos compromissos", en: "Our commitments", es: "Nuestros compromisos" },
-  "benefits.validated_companies": { pt: "Empresas Validadas", en: "Validated Companies", es: "Empresas Validadas" },
-  "benefits.validated_companies_desc": {
-    pt: "Trabalhamos apenas com empresas verificadas e certificadas, garantindo qualidade e confiança.",
-    en: "We only work with verified and certified companies, ensuring quality and trust.",
-    es: "Trabajamos solo con empresas verificadas y certificadas, garantizando calidad y confianza.",
-  },
-  "benefits.quick_quotes": { pt: "Orçamentos Rápidos", en: "Quick Quotes", es: "Presupuestos Rápidos" },
-  "benefits.quick_quotes_desc": {
-    pt: "Receba até 5 orçamentos de diferentes empresas em menos de 72 horas.",
-    en: "Receive up to 5 quotes from different companies in less than 72 hours.",
-    es: "Reciba hasta 5 presupuestos de diferentes empresas en menos de 72 horas.",
-  },
-  "benefits.support": { pt: "Suporte Especializado", en: "Expert Support", es: "Soporte Especializado" },
-  "benefits.support_desc": {
-    pt: "Acompanhamento personalizado em todas as fases do seu projeto, do início ao fim.",
-    en: "Personalized support at every stage of your project, from start to finish.",
-    es: "Acompañamiento personalizado en todas las fases de su proyecto, de principio a fin.",
-  },
-  "benefits.security": { pt: "Segurança Garantida", en: "Guaranteed Security", es: "Seguridad Garantizada" },
-  "benefits.security_desc": {
-    pt: "Contratos claros e proteção total para o seu investimento e projeto.",
-    en: "Clear contracts and full protection for your investment and project.",
-    es: "Contratos claros y protección total para su inversión y proyecto.",
-  },
+  "benefits.title": { pt: "Porquê a Limarestas.", en: "Why Limarestas.", es: "Por qué Limarestas." },
 
-  // Services
-  "services.label": { pt: "Os nossos serviços", en: "Our services", es: "Nuestros servicios" },
-  "services.title": {
-    pt: "Soluções completas para o seu projeto",
-    en: "Complete solutions for your project",
-    es: "Soluciones completas para su proyecto",
-  },
-  "services.residential": { pt: "Construção Residencial", en: "Residential Construction", es: "Construcción Residencial" },
-  "services.commercial": { pt: "Espaços Comerciais", en: "Commercial Spaces", es: "Espacios Comerciales" },
-  "services.renovation": { pt: "Remodelação", en: "Renovation", es: "Remodelación" },
-  "services.landscaping": { pt: "Paisagismo", en: "Landscaping", es: "Paisajismo" },
-
-  // Contact
+  // Contact Section
   "contact.label": { pt: "Contacte-nos", en: "Contact us", es: "Contáctenos" },
   "contact.title": {
-    pt: "Pronto para começar o seu projeto?",
-    en: "Ready to start your project?",
-    es: "¿Listo para comenzar su proyecto?",
-  },
-  "contact.subtitle": {
-    pt: "Entre em contacto connosco e receba um orçamento personalizado sem compromisso.",
-    en: "Get in touch with us and receive a personalized quote with no commitment.",
-    es: "Póngase en contacto con nosotros y reciba un presupuesto personalizado sin compromiso.",
+    pt: "Vamos falar sobre o seu projeto",
+    en: "Let's talk about your project",
+    es: "Hablemos de su proyecto",
   },
   "contact.whatsapp": { pt: "WhatsApp", en: "WhatsApp", es: "WhatsApp" },
-  "contact.click_to_talk": { pt: "Clique para falar connosco", en: "Click to talk to us", es: "Haga clic para hablar con nosotros" },
-  "contact.email": { pt: "Email", en: "Email", es: "Email" },
-  "contact.address": { pt: "Morada", en: "Address", es: "Dirección" },
-  "contact.form.name": { pt: "Nome", en: "Name", es: "Nombre" },
-  "contact.form.email": { pt: "Email", en: "Email", es: "Email" },
-  "contact.form.phone": { pt: "Telefone", en: "Phone", es: "Teléfono" },
-  "contact.form.message": { pt: "Mensagem", en: "Message", es: "Mensaje" },
-  "contact.form.submit": { pt: "Enviar mensagem", en: "Send message", es: "Enviar mensaje" },
+  "contact.whatsappCta": { pt: "Contactar via WhatsApp", en: "Contact via WhatsApp", es: "Contactar vía WhatsApp" },
 
-  // Portfolio
-  "portfolio.label": { pt: "Portfólio", en: "Portfolio", es: "Portafolio" },
-  "portfolio.title": { pt: "Projetos em destaque", en: "Featured projects", es: "Proyectos destacados" },
-  "portfolio.view_all": { pt: "Ver todos", en: "View all", es: "Ver todos" },
-
-  // FAQ
-  "faq.label": { pt: "Perguntas frequentes", en: "FAQ", es: "Preguntas frecuentes" },
-  "faq.title": { pt: "Tire as suas dúvidas", en: "Get your questions answered", es: "Resuelva sus dudas" },
-
-  // Footer
-  "footer.rights": { pt: "Todos os direitos reservados", en: "All rights reserved", es: "Todos los derechos reservados" },
-  "footer.privacy": { pt: "Política de Privacidade", en: "Privacy Policy", es: "Política de Privacidad" },
-  "footer.terms": { pt: "Termos de Serviço", en: "Terms of Service", es: "Términos de Servicio" },
-
-  // Calculator
-  "calculator.label": { pt: "Calculadora de Orçamento", en: "Budget Calculator", es: "Calculadora de Presupuesto" },
-  "calculator.title": { pt: "Estime o seu orçamento", en: "Estimate your budget", es: "Estime su presupuesto" },
-
-  // Join Us
-  "join.title": { pt: "Junte-se a nós", en: "Join us", es: "Únase a nosotros" },
+  // Join Us Page
+  "join.title": { pt: "Junte-se a Nós", en: "Join Us", es: "Únete a Nosotros" },
   "join.subtitle": {
-    pt: "Faça parte da rede de profissionais Limarestas",
-    en: "Join the Limarestas network of professionals",
-    es: "Únase a la red de profesionales Limarestas",
+    pt: "Faça parte da rede LAT - Limarestas e expanda as suas oportunidades de negócio.",
+    en: "Join the LAT - Limarestas network and expand your business opportunities.",
+    es: "Forme parte de la red LAT - Limarestas y amplíe sus oportunidades de negocio.",
   },
-
-  // Calendar
-  "calendar.title": { pt: "Calendário", en: "Calendar", es: "Calendario" },
-  "calendar.subtitle": { pt: "Visualize visitas, reuniões e prazos", en: "View visits, meetings and deadlines", es: "Ver visitas, reuniones y plazos" },
-  "calendar.today": { pt: "Hoje", en: "Today", es: "Hoy" },
-  "calendar.new_event": { pt: "Novo Evento", en: "New Event", es: "Nuevo Evento" },
-  "calendar.select_day": { pt: "Selecione um dia", en: "Select a day", es: "Seleccione un día" },
-  "calendar.no_events": { pt: "Nenhum evento para este dia", en: "No events for this day", es: "No hay eventos para este día" },
-  "calendar.add_event": { pt: "Adicionar evento", en: "Add event", es: "Añadir evento" },
-  "calendar.visits": { pt: "Visitas", en: "Visits", es: "Visitas" },
-  "calendar.meetings": { pt: "Reuniões", en: "Meetings", es: "Reuniones" },
-  "calendar.deliveries": { pt: "Entregas", en: "Deliveries", es: "Entregas" },
-  "calendar.deadlines": { pt: "Prazos", en: "Deadlines", es: "Plazos" },
+  "join.architects": { pt: "Arquitetos", en: "Architects", es: "Arquitectos" },
+  "join.engineers": { pt: "Engenheiros", en: "Engineers", es: "Ingenieros" },
+  "join.builders": { pt: "Construtores", en: "Builders", es: "Constructores" },
+  "join.contractors": { pt: "Empreiteiros", en: "Contractors", es: "Contratistas" },
+  "join.condominiums": { pt: "Condomínios", en: "Condominiums", es: "Condominios" },
+  "join.realestate": { pt: "Imobiliárias", en: "Real Estate", es: "Inmobiliarias" },
 
   // Dashboard
-  "dashboard.panel": { pt: "Painel", en: "Dashboard", es: "Panel" },
-  "dashboard.admin_panel": { pt: "Painel Administrativo", en: "Admin Dashboard", es: "Panel Administrativo" },
-  "dashboard.tech_panel": { pt: "Painel Técnico", en: "Technical Panel", es: "Panel Técnico" },
+  "dashboard.title": { pt: "Painel LAT", en: "LAT Panel", es: "Panel LAT" },
+  "dashboard.completedWorks": { pt: "Obras Concluídas", en: "Completed Works", es: "Obras Completadas" },
+
+  // Workflow
+  "workflow.step1": { pt: "Pedido de Informação", en: "Information Request", es: "Solicitud de Información" },
+  "workflow.step2": { pt: "Visita", en: "Visit", es: "Visita" },
+  "workflow.step3": { pt: "Orçamento", en: "Budget", es: "Presupuesto" },
+  "workflow.step4": { pt: "Estado do Orçamento", en: "Budget Status", es: "Estado del Presupuesto" },
+  "workflow.step5": { pt: "Adjudicação / Comissão Paga", en: "Award / Commission Paid", es: "Adjudicación / Comisión Pagada" },
+  "workflow.step6": { pt: "Obra Concluída", en: "Work Completed", es: "Obra Completada" },
+  "workflow.thankYou": { pt: "Obrigado por trabalhar connosco.", en: "Thank you for working with us.", es: "Gracias por trabajar con nosotros." },
+
+  // Contractors List
+  "contractors.title": { pt: "Lista de Empreiteiros", en: "Contractors List", es: "Lista de Contratistas" },
+  "contractors.selectWorks": { pt: "Escolher Lista de Obras", en: "Select Works List", es: "Seleccionar Lista de Obras" },
+
+  // Billing
+  "billing.contractors": { pt: "Empreiteiros", en: "Contractors", es: "Contratistas" },
+  "billing.clients": { pt: "Clientes", en: "Clients", es: "Clientes" },
+  "billing.mediators": { pt: "Mediadores", en: "Mediators", es: "Mediadores" },
+
+  // Accounts
+  "accounts.title": { pt: "Consulta de Contas", en: "Account Consultation", es: "Consulta de Cuentas" },
+
+  // Feedback
+  "feedback.title": { pt: "Feedback de Clientes", en: "Client Feedback", es: "Feedback de Clientes" },
+
+  // Technical Panel
+  "technical.mediators": { pt: "Mediadores (Técnicos)", en: "Mediators (Technicians)", es: "Mediadores (Técnicos)" },
+
+  // User Types
+  "user.client": { pt: "Cliente", en: "Client", es: "Cliente" },
+  "user.builder": { pt: "Construtor", en: "Builder", es: "Constructor" },
+  "user.contractor": { pt: "Empreiteiro", en: "Contractor", es: "Contratista" },
+
+  // Budget Approvals
+  "approvals.title": { pt: "Aprovação de Orçamentos", en: "Budget Approvals", es: "Aprobación de Presupuestos" },
+
+  // MOAP
+  "moap.budgetRequest": { pt: "Pedido de Orçamento", en: "Budget Request", es: "Solicitud de Presupuesto" },
+  "moap.uploadBudget": { pt: "Carregar Orçamento", en: "Upload Budget", es: "Cargar Presupuesto" },
+  "moap.features": { pt: "Funcionalidades", en: "Features", es: "Funcionalidades" },
+
+  // Common
+  "common.backToSite": { pt: "Voltar ao site", en: "Back to site", es: "Volver al sitio" },
+  "common.logout": { pt: "Terminar sessão", en: "Logout", es: "Cerrar sesión" },
 }
 
 interface LanguageContextType {
@@ -175,19 +144,29 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>("pt")
 
-  const t = useCallback(
-    (key: string) => {
-      const translation = translations[key]
-      if (!translation) {
-        console.warn(`[v0] Translation missing for key: ${key}`)
-        return key
-      }
-      return translation[language]
-    },
-    [language]
-  )
+  useEffect(() => {
+    const storedLang = localStorage.getItem("limarestas_language") as Language
+    if (storedLang && ["pt", "en", "es"].includes(storedLang)) {
+      setLanguage(storedLang)
+    }
+  }, [])
 
-  return <LanguageContext.Provider value={{ language, setLanguage, t }}>{children}</LanguageContext.Provider>
+  const handleSetLanguage = (lang: Language) => {
+    setLanguage(lang)
+    localStorage.setItem("limarestas_language", lang)
+  }
+
+  const t = (key: string): string => {
+    const translation = translations[key]
+    if (!translation) return key
+    return translation[language] || translation.pt || key
+  }
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
+      {children}
+    </LanguageContext.Provider>
+  )
 }
 
 export function useLanguage() {

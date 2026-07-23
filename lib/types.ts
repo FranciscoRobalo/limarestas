@@ -95,7 +95,7 @@ export interface ActivityLog {
   userRole: string
   action: string
   details: string
-  entityType: "obra" | "documento" | "visita" | "mensagem" | "usuario" | "publicidade" | "sistema"
+  entityType: "obra" | "documento" | "visita" | "mensagem" | "usuario" | "sistema" | "publicidade"
   entityId?: string
   timestamp: string
   ipAddress?: string

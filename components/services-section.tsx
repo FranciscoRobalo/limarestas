@@ -5,8 +5,29 @@ import { ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/contexts/language-context"
 
+const services = [
+  {
+    title: "Construção",
+    description: "Desde casas novas a ampliações, encontramos construtores de confiança para o seu projeto.",
+    image: "/modern-house-construction-site-professional-worker.jpg",
+    href: "#",
+  },
+  {
+    title: "Arquitetura",
+    description: "Conectamos-o com arquitetos que dão vida à sua visão, com design funcional e estético.",
+    image: "/architectural-blueprints-modern-building-design.jpg",
+    href: "#",
+  },
+  {
+    title: "Paisagismo e Espaços Exteriores",
+    description: "Jardins, piscinas e espaços exteriores que complementam perfeitamente a sua propriedade.",
+    image: "/beautiful-landscaped-garden-with-pool-modern-desig.jpg",
+    href: "#",
+  },
+]
+
 export function ServicesSection() {
-  const { t, language } = useLanguage()
+  const { language } = useLanguage()
 
   const services = [
     {
@@ -46,8 +67,8 @@ export function ServicesSection() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
           <div>
-            <span className="text-sm font-semibold text-accent uppercase tracking-wider">{t("services.label")}</span>
-            <h2 className="mt-4 text-3xl md:text-4xl font-serif font-medium">{t("services.title")}</h2>
+            <span className="text-sm font-semibold text-accent uppercase tracking-wider">O que fazemos</span>
+            <h2 className="mt-4 text-3xl md:text-4xl font-serif font-medium">Os nossos serviços incluem</h2>
           </div>
           <Button
             asChild
