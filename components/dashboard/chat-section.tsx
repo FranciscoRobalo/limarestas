@@ -7,7 +7,14 @@ import { Send, User, Bot, MoreVertical } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/contexts/auth-context"
+import { toast } from "sonner"
 import { useMensagens } from "@/hooks/use-mensagens"
 import { useState } from "react"
 
@@ -26,7 +33,7 @@ const mockUsers: ChatUser[] = [
 
 export function ChatSection() {
   const { user } = useAuth()
-  const { mensagens, addMensagem } = useMensagens()
+  const { mensagens, addMensagem, marcarThreadComoLida, limparThread } = useMensagens()
 
   const [newMessage, setNewMessage] = useState("")
   const [selectedChat, setSelectedChat] = useState<ChatUser>(mockUsers[0])
@@ -36,18 +43,25 @@ export function ChatSection() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
+  const threadMessages = mensagens.filter((message) => (message.threadId ?? "1") === selectedChat.id)
+
   useEffect(() => {
     scrollToBottom()
-  }, [mensagens])
+  }, [mensagens, selectedChat.id])
+
+  const selectChat = (chatUser: ChatUser) => {
+    setSelectedChat(chatUser)
+    marcarThreadComoLida(chatUser.id)
+  }
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newMessage.trim()) return
 
-    addMensagem(newMessage, user?.name || "Utilizador", "user")
+    const sentTo = selectedChat
+    addMensagem(newMessage.trim(), user?.name || "Utilizador", "user", sentTo.id)
     setNewMessage("")
 
-    // Simulate response after a short delay
     setTimeout(() => {
       const responses = [
         "Obrigado pela sua mensagem! Vamos analisar e responder em breve.",
@@ -57,7 +71,7 @@ export function ChatSection() {
       ]
       const randomResponse = responses[Math.floor(Math.random() * responses.length)]
 
-      addMensagem(randomResponse, selectedChat.name, "support")
+      addMensagem(randomResponse, sentTo.name, "support", sentTo.id)
     }, 1500)
   }
 
@@ -95,7 +109,7 @@ export function ChatSection() {
               {mockUsers.map((chatUser) => (
                 <button
                   key={chatUser.id}
-                  onClick={() => setSelectedChat(chatUser)}
+                  onClick={() => selectChat(chatUser)}
                   className={`
                     w-full flex items-center gap-3 px-4 py-3 text-left
                     hover:bg-secondary transition-colors
@@ -149,15 +163,34 @@ export function ChatSection() {
                   </CardDescription>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="text-muted-foreground">
-                <MoreVertical className="w-5 h-5" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-muted-foreground" aria-label="Opções da conversa">
+                    <MoreVertical className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      limparThread(selectedChat.id)
+                      toast.success("Conversa limpa")
+                    }}
+                  >
+                    Limpar conversa
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </CardHeader>
 
           {/* Messages */}
           <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-            {mensagens.map((message) => (
+            {threadMessages.length === 0 && (
+              <div className="flex h-full items-center justify-center text-center text-sm text-muted-foreground">
+                Inicie a conversa com {selectedChat.name}.
+              </div>
+            )}
+            {threadMessages.map((message) => (
               <div key={message.id} className={`flex gap-3 ${message.remetente === "user" ? "flex-row-reverse" : ""}`}>
                 <div
                   className={`

@@ -40,6 +40,7 @@ export interface Visita {
 
 export interface Mensagem {
   id: string
+  threadId?: string
   conteudo: string
   remetente: "user" | "support" | "system"
   nomeRemetente: string

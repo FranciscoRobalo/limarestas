@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/contexts/auth-context"
 import { LanguageProvider } from "@/contexts/language-context"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
 const dmSans = DM_Sans({
@@ -38,6 +39,7 @@ export default function RootLayout({
             <AuthProvider>{children}</AuthProvider>
           </LanguageProvider>
         </ThemeProvider>
+        <Toaster richColors position="top-right" />
         <Analytics />
       </body>
     </html>
