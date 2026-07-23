@@ -5,6 +5,17 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ClipboardCheck, Clock, CheckCircle2, XCircle, AlertCircle, Eye, MapPin, Calendar, Euro } from "lucide-react"
 import { useObras } from "@/hooks/use-obras"
+import { useState } from "react"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { toast } from "sonner"
 import type React from "react"
 
 type StatusType = "pendente" | "em-analise" | "aprovado" | "rejeitado" | "informacao-adicional"
@@ -56,6 +67,28 @@ const statusConfig: Record<StatusType, { label: string; color: string; icon: Rea
 
 export function ValidacaoSection() {
   const { obras, updateObra } = useObras()
+  const [selectedObra, setSelectedObra] = useState<Obra | null>(null)
+  const [observacoes, setObservacoes] = useState("")
+
+  const openDetails = (obra: Obra) => {
+    setSelectedObra(obra)
+    setObservacoes(obra.observacoes ?? "")
+  }
+
+  const decide = (status: StatusType) => {
+    if (!selectedObra) return
+    if ((status === "rejeitado" || status === "informacao-adicional") && !observacoes.trim()) {
+      toast.error("Indique uma justificação antes de continuar.")
+      return
+    }
+    updateObra(selectedObra.id, { status, observacoes: observacoes.trim() || undefined })
+    setSelectedObra(null)
+    toast.success(`Obra ${statusConfig[status].label.toLowerCase()}`)
+  }
+
+  const navigateTo = (tab: string) => {
+    window.location.href = `/dashboard?tab=${tab}`
+  }
 
   return (
     <div className="space-y-8">
@@ -158,16 +191,16 @@ export function ValidacaoSection() {
                   )}
 
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      Ver Detalhes
+                    <Button variant="outline" size="sm" onClick={() => openDetails(obra)}>
+                      Ver e decidir
                     </Button>
                     {obra.status === "informacao-adicional" && (
-                      <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
-                        Enviar Documentos
+                      <Button size="sm" className="bg-orange-500 hover:bg-orange-600" onClick={() => navigateTo("documents")}>
+                        Ver Documentos
                       </Button>
                     )}
                     {obra.status === "aprovado" && (
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => navigateTo("agendar")}>
                         Agendar Visita
                       </Button>
                     )}
@@ -178,6 +211,45 @@ export function ValidacaoSection() {
           })}
         </div>
       )}
+
+      <Dialog open={!!selectedObra} onOpenChange={(open) => !open && setSelectedObra(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedObra?.nome}</DialogTitle>
+            <DialogDescription>
+              Reveja os dados, registe observações e escolha uma decisão.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedObra && (
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-4 rounded-lg bg-secondary/50 p-4 text-sm">
+                <div><span className="text-muted-foreground">Referência</span><p className="font-medium">{selectedObra.id}</p></div>
+                <div><span className="text-muted-foreground">Tipo</span><p className="font-medium">{selectedObra.tipo}</p></div>
+                <div><span className="text-muted-foreground">Local</span><p className="font-medium">{selectedObra.localizacao}</p></div>
+                <div><span className="text-muted-foreground">Orçamento</span><p className="font-medium">{selectedObra.orcamento}</p></div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="approval-notes" className="text-sm font-medium">Observações da decisão</label>
+                <Textarea
+                  id="approval-notes"
+                  value={observacoes}
+                  onChange={(event) => setObservacoes(event.target.value)}
+                  placeholder="Justificação, condições ou informação a solicitar..."
+                  rows={4}
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex-wrap sm:justify-between">
+            <div className="flex flex-wrap gap-2">
+              <Button variant="destructive" onClick={() => decide("rejeitado")}>Rejeitar</Button>
+              <Button variant="outline" onClick={() => decide("informacao-adicional")}>Pedir informação</Button>
+              <Button variant="secondary" onClick={() => decide("em-analise")}>Em análise</Button>
+              <Button onClick={() => decide("aprovado")}>Aprovar</Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

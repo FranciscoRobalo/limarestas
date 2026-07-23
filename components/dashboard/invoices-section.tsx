@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { storage } from "@/lib/storage"
 import {
   Plus,
   Download,
@@ -112,6 +113,16 @@ export function InvoicesSection() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [clientTypeFilter, setClientTypeFilter] = useState("all")
   const [isCreateOpen, setIsCreateOpen] = useState(false)
+
+  useEffect(() => {
+    const saved = storage.get<Invoice[]>("limarestas_invoices")
+    if (saved?.length) setInvoices(saved)
+  }, [])
+
+  useEffect(() => {
+    storage.set("limarestas_invoices", invoices)
+  }, [invoices])
+
   const [newInvoice, setNewInvoice] = useState({
     client: "",
     clientType: "cliente" as ClientType,

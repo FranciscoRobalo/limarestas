@@ -9,9 +9,9 @@ const navigation = {
     { name: "Contacto", href: "#contacto" },
   ],
   social: [
-    { name: "Facebook", href: "#", icon: Facebook },
-    { name: "Instagram", href: "#", icon: Instagram },
-    { name: "LinkedIn", href: "#", icon: Linkedin },
+    { name: "Facebook", href: "https://www.facebook.com/", icon: Facebook },
+    { name: "Instagram", href: "https://www.instagram.com/", icon: Instagram },
+    { name: "LinkedIn", href: "https://www.linkedin.com/", icon: Linkedin },
   ],
 }
 
@@ -44,6 +44,8 @@ export function Footer() {
               <a
                 key={item.name}
                 href={item.href}
+                target="_blank"
+                rel="noreferrer"
                 className="w-10 h-10 bg-primary-foreground/10 rounded-lg flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
               >
                 <span className="sr-only">{item.name}</span>
@@ -59,10 +61,10 @@ export function Footer() {
               © {new Date().getFullYear()} LAT - Limarestas. Todos os direitos reservados.
             </p>
             <div className="flex gap-6 text-sm text-primary-foreground/60">
-              <Link href="#" className="hover:text-primary-foreground transition-colors">
+              <Link href="/#contacto" className="hover:text-primary-foreground transition-colors">
                 Política de Privacidade
               </Link>
-              <Link href="#" className="hover:text-primary-foreground transition-colors">
+              <Link href="/#contacto" className="hover:text-primary-foreground transition-colors">
                 Termos de Uso
               </Link>
             </div>

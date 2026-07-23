@@ -30,18 +30,26 @@ export function useMensagens() {
     setLoading(false)
   }, [])
 
-  const addMensagem = (conteudo: string, nomeRemetente: string, remetente: Mensagem["remetente"] = "user") => {
+  const addMensagem = (
+    conteudo: string,
+    nomeRemetente: string,
+    remetente: Mensagem["remetente"] = "user",
+    threadId = "1",
+  ) => {
     const newMensagem: Mensagem = {
-      id: `MSG-${Date.now()}`,
+      id: `MSG-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      threadId,
       conteudo,
       remetente,
       nomeRemetente,
       timestamp: new Date().toISOString(),
-      lida: false,
+      lida: remetente === "user",
     }
-    const updated = [...mensagens, newMensagem]
-    setMensagens(updated)
-    storage.set(MENSAGENS_KEY, updated)
+    setMensagens((current) => {
+      const updated = [...current, newMensagem]
+      storage.set(MENSAGENS_KEY, updated)
+      return updated
+    })
     return newMensagem
   }
 
@@ -51,15 +59,33 @@ export function useMensagens() {
     storage.set(MENSAGENS_KEY, updated)
   }
 
-  const getNaoLidas = () => {
-    return mensagens.filter((msg) => !msg.lida && msg.remetente !== "user")
+  const marcarThreadComoLida = (threadId: string) => {
+    setMensagens((current) => {
+      const updated = current.map((msg) =>
+        (msg.threadId ?? "1") === threadId && msg.remetente !== "user" ? { ...msg, lida: true } : msg,
+      )
+      storage.set(MENSAGENS_KEY, updated)
+      return updated
+    })
   }
+
+  const limparThread = (threadId: string) => {
+    setMensagens((current) => {
+      const updated = current.filter((msg) => (msg.threadId ?? "1") !== threadId)
+      storage.set(MENSAGENS_KEY, updated)
+      return updated
+    })
+  }
+
+  const getNaoLidas = () => mensagens.filter((msg) => !msg.lida && msg.remetente !== "user")
 
   return {
     mensagens,
     loading,
     addMensagem,
     marcarComoLida,
+    marcarThreadComoLida,
+    limparThread,
     getNaoLidas,
   }
 }

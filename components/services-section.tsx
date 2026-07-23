@@ -1,6 +1,9 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useLanguage } from "@/contexts/language-context"
 
 const services = [
   {
@@ -24,6 +27,41 @@ const services = [
 ]
 
 export function ServicesSection() {
+  const { language } = useLanguage()
+
+  const services = [
+    {
+      title: language === "pt" ? "Construcao" : language === "en" ? "Construction" : "Construccion",
+      description: language === "pt" 
+        ? "Desde casas novas a ampliacoes, encontramos construtores de confianca para o seu projeto."
+        : language === "en"
+        ? "From new homes to extensions, we find reliable builders for your project."
+        : "Desde casas nuevas hasta ampliaciones, encontramos constructores de confianza para su proyecto.",
+      image: "/modern-house-construction-site-professional-worker.jpg",
+      href: "#contacto",
+    },
+    {
+      title: language === "pt" ? "Arquitetura" : language === "en" ? "Architecture" : "Arquitectura",
+      description: language === "pt"
+        ? "Conectamos-o com arquitetos que dao vida a sua visao, com design funcional e estetico."
+        : language === "en"
+        ? "We connect you with architects who bring your vision to life, with functional and aesthetic design."
+        : "Le conectamos con arquitectos que dan vida a su vision, con diseno funcional y estetico.",
+      image: "/architectural-blueprints-modern-building-design.jpg",
+      href: "#contacto",
+    },
+    {
+      title: language === "pt" ? "Paisagismo e Espacos Exteriores" : language === "en" ? "Landscaping and Outdoor Spaces" : "Paisajismo y Espacios Exteriores",
+      description: language === "pt"
+        ? "Jardins, piscinas e espacos exteriores que complementam perfeitamente a sua propriedade."
+        : language === "en"
+        ? "Gardens, pools and outdoor spaces that perfectly complement your property."
+        : "Jardines, piscinas y espacios exteriores que complementan perfectamente su propiedad.",
+      image: "/beautiful-landscaped-garden-with-pool-modern-desig.jpg",
+      href: "#contacto",
+    },
+  ]
+
   return (
     <section id="servicos" className="py-20 md:py-32 bg-primary text-primary-foreground">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -37,7 +75,7 @@ export function ServicesSection() {
             variant="outline"
             className="self-start md:self-auto border-primary-foreground/30 text-primary-foreground bg-transparent hover:bg-primary-foreground/10"
           >
-            <Link href="#">Ver mais serviços</Link>
+            <Link href="#contacto">Pedir informações</Link>
           </Button>
         </div>
 

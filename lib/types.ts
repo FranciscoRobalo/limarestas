@@ -40,6 +40,7 @@ export interface Visita {
 
 export interface Mensagem {
   id: string
+  threadId?: string
   conteudo: string
   remetente: "user" | "support" | "system"
   nomeRemetente: string
@@ -95,7 +96,7 @@ export interface ActivityLog {
   userRole: string
   action: string
   details: string
-  entityType: "obra" | "documento" | "visita" | "mensagem" | "usuario" | "sistema"
+  entityType: "obra" | "documento" | "visita" | "mensagem" | "usuario" | "sistema" | "publicidade"
   entityId?: string
   timestamp: string
   ipAddress?: string

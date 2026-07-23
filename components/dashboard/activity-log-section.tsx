@@ -26,6 +26,7 @@ const entityIcons = {
   mensagem: MessageSquare,
   usuario: User,
   sistema: Settings,
+  publicidade: Building2,
 }
 
 const entityColors = {
@@ -35,6 +36,7 @@ const entityColors = {
   mensagem: "bg-amber-100 text-amber-700",
   usuario: "bg-cyan-100 text-cyan-700",
   sistema: "bg-gray-100 text-gray-700",
+  publicidade: "bg-amber-100 text-amber-700",
 }
 
 const roleColors: Record<string, string> = {

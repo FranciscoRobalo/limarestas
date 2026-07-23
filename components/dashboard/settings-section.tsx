@@ -86,8 +86,9 @@ export function SettingsSection() {
             <div className="px-3 py-2 bg-secondary rounded-md text-sm">
               {user?.role === "admin" && "Administrador"}
               {user?.role === "tecnico" && "Técnico"}
-              {user?.role === "public" && "Utilizador"}
-              {user?.role === "publicidade" && "Publicidade"}
+              {user?.role === "cliente" && "Cliente"}
+              {user?.role === "construtor" && "Construtor"}
+              {user?.role === "empreiteiro" && "Empreiteiro"}
             </div>
           </div>
         </CardContent>
