@@ -14,6 +14,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
+  isLoading: boolean
   login: (username: string, password: string) => boolean
   logout: () => void
 }
@@ -29,12 +30,15 @@ const VALID_USERS: Record<string, { password: string; name: string; role: UserRo
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("limarestas_user")
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
+    try {
+      const storedUser = localStorage.getItem("limarestas_user")
+      if (storedUser) setUser(JSON.parse(storedUser))
+    } finally {
+      setIsLoading(false)
     }
   }, [])
 
@@ -60,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>{children}</AuthContext.Provider>
   )
 }
 

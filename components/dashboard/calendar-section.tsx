@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useEffect, useState, useMemo } from "react"
+import { storage } from "@/lib/storage"
 import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, User, Share2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -116,6 +117,15 @@ export function CalendarSection() {
     client: "",
   })
   const { visitas } = useVisitas()
+
+  useEffect(() => {
+    const saved = storage.get<CalendarEvent[]>("limarestas_calendar_events")
+    if (saved?.length) setEvents(saved)
+  }, [])
+
+  useEffect(() => {
+    storage.set("limarestas_calendar_events", events)
+  }, [events])
 
   const handleCreateEvent = () => {
     if (!newEvent.title || !newEvent.date || !newEvent.time) {

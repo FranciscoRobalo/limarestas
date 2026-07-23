@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { storage } from "@/lib/storage"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -96,6 +97,15 @@ export function FeedbackSection() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>(initialFeedbacks)
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("todos")
+
+  useEffect(() => {
+    const saved = storage.get<Feedback[]>("limarestas_feedbacks")
+    if (saved?.length) setFeedbacks(saved)
+  }, [])
+
+  useEffect(() => {
+    storage.set("limarestas_feedbacks", feedbacks)
+  }, [feedbacks])
 
   const updateFeedbackStatus = (id: string, newStatus: Feedback["status"]) => {
     setFeedbacks(prev => prev.map(fb => 

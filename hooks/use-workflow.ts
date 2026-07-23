@@ -6,41 +6,52 @@ import { storage } from "@/lib/storage"
 
 const WORKFLOW_KEY = "limarestas_workflow"
 
-export function useWorkflow(obraId: string) {
+export function useWorkflow(obraId: string, initialEtapas: EtapaWorkflow[] = []) {
   const [etapas, setEtapas] = useState<EtapaWorkflow[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const stored = storage.get<Record<string, EtapaWorkflow[]>>(WORKFLOW_KEY) || {}
-    if (stored[obraId]) {
-      setEtapas(stored[obraId])
+    const savedEtapas = stored[obraId]
+    const nextEtapas = savedEtapas?.length ? savedEtapas : initialEtapas.map((etapa) => ({
+      ...etapa,
+      obraId,
+      tarefas: etapa.tarefas.map((tarefa) => ({ ...tarefa })),
+    }))
+
+    setEtapas(nextEtapas)
+    if (!savedEtapas?.length && nextEtapas.length) {
+      storage.set(WORKFLOW_KEY, { ...stored, [obraId]: nextEtapas })
     }
     setLoading(false)
   }, [obraId])
 
+  const persist = (updater: (current: EtapaWorkflow[]) => EtapaWorkflow[]) => {
+    setEtapas((current) => {
+      const updated = updater(current)
+      const stored = storage.get<Record<string, EtapaWorkflow[]>>(WORKFLOW_KEY) || {}
+      storage.set(WORKFLOW_KEY, { ...stored, [obraId]: updated })
+      return updated
+    })
+  }
+
   const updateTarefa = (etapaId: number, tarefaId: string, completada: boolean) => {
-    const updated = etapas.map((etapa) =>
+    persist((current) => current.map((etapa) =>
       etapa.id === etapaId
         ? {
             ...etapa,
             tarefas: etapa.tarefas.map((tarefa) => (tarefa.id === tarefaId ? { ...tarefa, completada } : tarefa)),
           }
         : etapa,
-    )
-    setEtapas(updated)
-
-    const stored = storage.get<Record<string, EtapaWorkflow[]>>(WORKFLOW_KEY) || {}
-    stored[obraId] = updated
-    storage.set(WORKFLOW_KEY, stored)
+    ))
   }
 
   const avancarEtapa = (etapaId: number) => {
-    const updated = etapas.map((etapa) => (etapa.id === etapaId ? { ...etapa, completada: true } : etapa))
-    setEtapas(updated)
-
-    const stored = storage.get<Record<string, EtapaWorkflow[]>>(WORKFLOW_KEY) || {}
-    stored[obraId] = updated
-    storage.set(WORKFLOW_KEY, stored)
+    persist((current) => current.map((etapa) =>
+      etapa.id === etapaId
+        ? { ...etapa, completada: true, tarefas: etapa.tarefas.map((tarefa) => ({ ...tarefa, completada: true })) }
+        : etapa,
+    ))
   }
 
   const getProgresso = () => {

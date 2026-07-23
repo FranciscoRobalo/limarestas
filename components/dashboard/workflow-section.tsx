@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useWorkflow } from "@/hooks/use-workflow"
+import type { EtapaWorkflow } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
@@ -258,9 +260,41 @@ const obrasExemplo: Obra[] = [
   },
 ]
 
+const workflowInicial: EtapaWorkflow[] = etapas.map((etapa) => ({
+  id: etapa.id,
+  obraId: "",
+  completada: false,
+  tarefas: etapa.tarefas.map((tarefa) => ({ ...tarefa })),
+}))
+
 export function WorkflowSection() {
-  const [obraSelecionada, setObraSelecionada] = useState<string | null>(null)
-  const [etapaSelecionada, setEtapaSelecionada] = useState<number>(1)
+  const [obraSelecionada, setObraSelecionada] = useState(obrasExemplo[0].id)
+  const [etapaSelecionada, setEtapaSelecionada] = useState(1)
+  const [tabAtual, setTabAtual] = useState("obras")
+  const { etapas: progressoEtapas, loading, updateTarefa, avancarEtapa, getProgresso } = useWorkflow(
+    obraSelecionada,
+    workflowInicial,
+  )
+
+  const progresso = getProgresso()
+  const obraAtual = obrasExemplo.find((obra) => obra.id === obraSelecionada) ?? obrasExemplo[0]
+  const etapaAtual = progressoEtapas.find((etapa) => !etapa.completada)?.id ?? 6
+  const tarefaAtual = progressoEtapas.flatMap((etapa) => etapa.tarefas).find((tarefa) => !tarefa.completada)
+  const etapaSelecionadaDados = progressoEtapas.find((etapa) => etapa.id === etapaSelecionada)
+  const todasTarefasConcluidas = etapaSelecionadaDados?.tarefas.every((tarefa) => tarefa.completada) ?? false
+  const etapaDesbloqueada = etapaSelecionada <= etapaAtual
+
+  const abrirProcesso = (obraId: string) => {
+    setObraSelecionada(obraId)
+    setEtapaSelecionada(1)
+    setTabAtual("processo")
+  }
+
+  const concluirEtapa = () => {
+    if (!todasTarefasConcluidas) return
+    avancarEtapa(etapaSelecionada)
+    if (etapaSelecionada < 6) setEtapaSelecionada(etapaSelecionada + 1)
+  }
 
   return (
     <div className="space-y-6">
@@ -271,7 +305,7 @@ export function WorkflowSection() {
         </p>
       </div>
 
-      <Tabs defaultValue="obras" className="space-y-6">
+      <Tabs value={tabAtual} onValueChange={setTabAtual} className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="obras">Obras em Curso</TabsTrigger>
           <TabsTrigger value="processo">Processo Completo</TabsTrigger>
@@ -354,7 +388,7 @@ export function WorkflowSection() {
                         <Clock className="w-4 h-4" />
                         Tarefa Atual: {obra.tarefaAtual}
                       </div>
-                      <Button size="sm" onClick={() => setObraSelecionada(obra.id)} className="flex items-center gap-2">
+                      <Button size="sm" onClick={() => abrirProcesso(obra.id)} className="flex items-center gap-2">
                         Ver Detalhes
                         <ArrowRight className="w-4 h-4" />
                       </Button>
@@ -376,13 +410,48 @@ export function WorkflowSection() {
         </TabsContent>
 
         <TabsContent value="processo" className="space-y-6">
-          {/* Seletor de Etapas */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">{obraAtual.nome}</CardTitle>
+              <CardDescription>
+                Cliente: {obraAtual.cliente} · {progresso}% concluído
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <Progress value={progresso} aria-label={`Progresso da obra: ${progresso}%`} />
+              <div className="flex flex-wrap gap-2">
+                {obrasExemplo.map((obra) => (
+                  <Button
+                    key={obra.id}
+                    type="button"
+                    size="sm"
+                    variant={obra.id === obraSelecionada ? "default" : "outline"}
+                    onClick={() => {
+                      setObraSelecionada(obra.id)
+                      setEtapaSelecionada(1)
+                    }}
+                  >
+                    {obra.nome.split(" - ")[0]}
+                  </Button>
+                ))}
+              </div>
+              {!loading && tarefaAtual && (
+                <p className="text-sm text-muted-foreground">
+                  Próxima ação: <span className="font-medium text-foreground">{tarefaAtual.titulo}</span>
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
           <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
             {etapas.map((etapa) => (
               <button
                 key={etapa.id}
+                type="button"
+                disabled={etapa.id > etapaAtual}
+                aria-label={`${etapa.nome}${etapa.id > etapaAtual ? " — bloqueada" : ""}`}
                 onClick={() => setEtapaSelecionada(etapa.id)}
-                className={`p-4 rounded-lg border-2 transition-all text-left ${
+                className={`p-4 rounded-lg border-2 transition-all text-left disabled:cursor-not-allowed disabled:opacity-50 ${
                   etapaSelecionada === etapa.id
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/50"
@@ -417,7 +486,7 @@ export function WorkflowSection() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {etapa.tarefas.map((tarefa, index) => (
+                    {(etapaSelecionadaDados?.tarefas ?? etapa.tarefas).map((tarefa) => (
                       <div key={tarefa.id} className="border border-border rounded-lg p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex items-start gap-3 flex-1">
@@ -462,26 +531,37 @@ export function WorkflowSection() {
                             </div>
                           </div>
                           <Button
+                            type="button"
                             size="sm"
                             variant={tarefa.completada ? "outline" : "default"}
                             className="ml-4"
-                            onClick={() => {}}
+                            disabled={!etapaDesbloqueada}
+                            onClick={() => updateTarefa(etapa.id, tarefa.id, !tarefa.completada)}
                           >
-                            {tarefa.completada ? "Concluída" : "Marcar"}
+                            {tarefa.completada ? "Reabrir" : "Marcar como concluída"}
                           </Button>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  {etapa.id < 6 && (
-                    <div className="mt-6 pt-6 border-t border-border">
-                      <Button className="w-full" size="lg">
-                        <span>Avançar para Etapa {etapa.id + 1}</span>
-                        <ChevronRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    </div>
-                  )}
+                  <div className="mt-6 flex flex-col gap-2 border-t border-border pt-6">
+                    <Button
+                      type="button"
+                      className="w-full"
+                      size="lg"
+                      disabled={!todasTarefasConcluidas || !etapaDesbloqueada}
+                      onClick={concluirEtapa}
+                    >
+                      <span>{etapa.id < 6 ? `Concluir e avançar para Etapa ${etapa.id + 1}` : "Concluir processo"}</span>
+                      <ChevronRight />
+                    </Button>
+                    {!todasTarefasConcluidas && (
+                      <p className="text-center text-sm text-muted-foreground">
+                        Conclua todas as tarefas desta etapa para avançar.
+                      </p>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -489,7 +569,7 @@ export function WorkflowSection() {
       </Tabs>
 
       {/* Mensagem de Sucesso */}
-      {etapaSelecionada === 6 && (
+      {progresso === 100 && (
         <Card className="bg-green-500/10 border-green-500/30">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">

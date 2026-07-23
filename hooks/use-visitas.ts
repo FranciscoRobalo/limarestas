@@ -51,6 +51,7 @@ export function useVisitas() {
     loading,
     addVisita,
     updateVisita,
+    atualizarStatusVisita: (id: string, status: Visita["status"]) => updateVisita(id, { status }),
     deleteVisita,
     getVisitasByObra,
   }

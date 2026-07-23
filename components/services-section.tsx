@@ -17,7 +17,7 @@ export function ServicesSection() {
         ? "From new homes to extensions, we find reliable builders for your project."
         : "Desde casas nuevas hasta ampliaciones, encontramos constructores de confianza para su proyecto.",
       image: "/modern-house-construction-site-professional-worker.jpg",
-      href: "#",
+      href: "#contacto",
     },
     {
       title: language === "pt" ? "Arquitetura" : language === "en" ? "Architecture" : "Arquitectura",
@@ -27,7 +27,7 @@ export function ServicesSection() {
         ? "We connect you with architects who bring your vision to life, with functional and aesthetic design."
         : "Le conectamos con arquitectos que dan vida a su vision, con diseno funcional y estetico.",
       image: "/architectural-blueprints-modern-building-design.jpg",
-      href: "#",
+      href: "#contacto",
     },
     {
       title: language === "pt" ? "Paisagismo e Espacos Exteriores" : language === "en" ? "Landscaping and Outdoor Spaces" : "Paisajismo y Espacios Exteriores",
@@ -37,7 +37,7 @@ export function ServicesSection() {
         ? "Gardens, pools and outdoor spaces that perfectly complement your property."
         : "Jardines, piscinas y espacios exteriores que complementan perfectamente su propiedad.",
       image: "/beautiful-landscaped-garden-with-pool-modern-desig.jpg",
-      href: "#",
+      href: "#contacto",
     },
   ]
 
@@ -54,7 +54,7 @@ export function ServicesSection() {
             variant="outline"
             className="self-start md:self-auto border-primary-foreground/30 text-primary-foreground bg-transparent hover:bg-primary-foreground/10"
           >
-            <Link href="#">Ver mais serviços</Link>
+            <Link href="#contacto">Pedir informações</Link>
           </Button>
         </div>
 
