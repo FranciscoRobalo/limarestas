@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { toast } from "sonner"
+import { storage } from "@/lib/storage"
 import {
   Search,
   Filter,
@@ -109,6 +111,7 @@ export function EmpreiteirosSection() {
   const [filtroLocalizacao, setFiltroLocalizacao] = useState<string>("")
   const [empreiteiroSelecionado, setEmpreiteiroSelecionado] = useState<Empreiteiro | null>(null)
   const [obrasSelecionadas, setObrasSelecionadas] = useState<string[]>([])
+  const [apenasDisponiveis, setApenasDisponiveis] = useState(false)
 
   const especialidades = [...new Set(empreiteirosExemplo.flatMap((e) => e.especialidades))]
   const localizacoes = [...new Set(empreiteirosExemplo.map((e) => e.localizacao))]
@@ -119,13 +122,25 @@ export function EmpreiteirosSection() {
       emp.empresa.toLowerCase().includes(searchTerm.toLowerCase())
     const matchEspecialidade = !filtroEspecialidade || emp.especialidades.includes(filtroEspecialidade)
     const matchLocalizacao = !filtroLocalizacao || emp.localizacao === filtroLocalizacao
-    return matchSearch && matchEspecialidade && matchLocalizacao
+    const matchDisponibilidade = !apenasDisponiveis || emp.disponivel
+    return matchSearch && matchEspecialidade && matchLocalizacao && matchDisponibilidade
   })
 
   const handleEnviarObras = () => {
     if (!empreiteiroSelecionado || obrasSelecionadas.length === 0) return
-    // Simular envio
-    alert(`Email enviado para ${empreiteiroSelecionado.email} com ${obrasSelecionadas.length} obras`)
+    const assignments = storage.get<Array<{ id: string; empreiteiroId: string; obraIds: string[]; enviadoEm: string }>>("limarestas_atribuicoes") ?? []
+    storage.set("limarestas_atribuicoes", [
+      ...assignments,
+      {
+        id: `ATR-${Date.now()}`,
+        empreiteiroId: empreiteiroSelecionado.id,
+        obraIds: obrasSelecionadas,
+        enviadoEm: new Date().toISOString(),
+      },
+    ])
+    toast.success(`Seleção enviada para ${empreiteiroSelecionado.nome}`, {
+      description: `${obrasSelecionadas.length} obra(s) associada(s). O email foi simulado.`,
+    })
     setEmpreiteiroSelecionado(null)
     setObrasSelecionadas([])
   }
@@ -182,9 +197,14 @@ export function EmpreiteirosSection() {
                 </option>
               ))}
             </select>
-            <Button variant="outline" className="bg-transparent">
+            <Button
+              variant={apenasDisponiveis ? "default" : "outline"}
+              className={apenasDisponiveis ? undefined : "bg-transparent"}
+              onClick={() => setApenasDisponiveis((value) => !value)}
+              aria-pressed={apenasDisponiveis}
+            >
               <Filter className="w-4 h-4 mr-2" />
-              Mais Filtros
+              {apenasDisponiveis ? "Apenas disponíveis" : "Filtrar disponíveis"}
             </Button>
           </div>
         </CardContent>

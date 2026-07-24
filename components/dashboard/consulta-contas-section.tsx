@@ -112,6 +112,42 @@ export function ConsultaContasSection() {
     .reduce((acc, m) => acc + m.valor, 0)
   const saldo = totalEntradas - totalSaidas
 
+  const downloadFile = (filename: string, content: string, type = "text/plain;charset=utf-8") => {
+    const url = URL.createObjectURL(new Blob([content], { type }))
+    const link = document.createElement("a")
+    link.href = url
+    link.download = filename
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const exportarMovimentos = () => {
+    const header = "Data;Tipo;Descrição;Categoria;Obra;Estado;Valor"
+    const rows = movimentosFiltrados.map((movimento) =>
+      [movimento.data, movimento.tipo, movimento.descricao, movimento.categoria, movimento.obra ?? "", movimento.estado, movimento.valor]
+        .map((value) => `"${String(value).replaceAll('"', '""')}"`)
+        .join(";"),
+    )
+    downloadFile("movimentos-limarestas.csv", [header, ...rows].join("\n"), "text/csv;charset=utf-8")
+    toast.success(`${movimentosFiltrados.length} movimentos exportados`)
+  }
+
+  const verDocumento = (movimento: Movimento) => {
+    if (!movimento.documento) return
+    const conteudo = [
+      "LIMARESTAS — Documento financeiro",
+      `Documento: ${movimento.documento}`,
+      `Data: ${new Date(movimento.data).toLocaleDateString("pt-PT")}`,
+      `Descrição: ${movimento.descricao}`,
+      `Categoria: ${movimento.categoria}`,
+      `Obra: ${movimento.obra ?? "Não aplicável"}`,
+      `Valor: ${movimento.valor.toLocaleString("pt-PT")} €`,
+      `Estado: ${movimento.estado}`,
+    ].join("\n")
+    downloadFile(movimento.documento.replace(/\.pdf$/i, ".txt"), conteudo)
+    toast.success("Documento preparado para download")
+  }
+
   const getEstadoBadge = (estado: Movimento["estado"]) => {
     switch (estado) {
       case "processado":
@@ -203,7 +239,7 @@ export function ConsultaContasSection() {
                 </option>
               ))}
             </select>
-            <Button variant="outline" className="bg-transparent">
+            <Button variant="outline" className="bg-transparent" onClick={exportarMovimentos} disabled={movimentosFiltrados.length === 0}>
               <Download className="w-4 h-4 mr-2" />
               Exportar
             </Button>
@@ -257,9 +293,9 @@ export function ConsultaContasSection() {
                     {movimento.valor.toLocaleString("pt-PT")} €
                   </div>
                   {movimento.documento && (
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => verDocumento(movimento)}>
                       <Eye className="w-4 h-4 mr-2" />
-                      Ver Documento
+                      Descarregar documento
                     </Button>
                   )}
                 </div>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useDocumentos } from "@/hooks/use-documentos"
 import { useState } from "react"
+import { toast } from "sonner"
 
 export function DocumentsSection() {
   const { documentos, addDocumento, deleteDocumento } = useDocumentos()
@@ -35,17 +36,30 @@ export function DocumentsSection() {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files)
       processFiles(selectedFiles)
+      e.target.value = ""
     }
   }
 
   const processFiles = (newFiles: File[]) => {
-    newFiles.forEach((file) => {
-      addDocumento(file)
+    const allowedExtensions = /\.(pdf|doc|docx|xls|xlsx|png|jpe?g|gif)$/i
+    const validFiles = newFiles.filter((file) => {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`${file.name} excede o limite de 10 MB`)
+        return false
+      }
+      if (!allowedExtensions.test(file.name)) {
+        toast.error(`${file.name} tem um formato não suportado`)
+        return false
+      }
+      return true
     })
+    validFiles.forEach((file) => addDocumento(file))
+    if (validFiles.length > 0) toast.success(`${validFiles.length} ficheiro(s) carregado(s)`)
   }
 
   const handleDeleteFile = (id: string) => {
     deleteDocumento(id)
+    toast.success("Documento eliminado")
   }
 
   const formatFileSize = (bytes: number) => {
