@@ -1,13 +1,44 @@
 "use client"
 
+import type { FormEvent } from "react"
 import { Mail, MapPin, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useLanguage } from "@/contexts/language-context"
+import { storage } from "@/lib/storage"
+import { toast } from "sonner"
 
 export function ContactSection() {
   const { language } = useLanguage()
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const form = event.currentTarget
+    const data = new FormData(form)
+    const name = String(data.get("name") ?? "").trim()
+    const email = String(data.get("email") ?? "").trim()
+    const message = String(data.get("message") ?? "").trim()
+    if (!name || !/^\S+@\S+\.\S+$/.test(email) || message.length < 10) {
+      toast.error("Preencha os campos obrigatórios", { description: "Indique nome, email válido e uma mensagem com pelo menos 10 caracteres." })
+      return
+    }
+    const requests = storage.get<Array<Record<string, string>>>("limarestas_contact_requests") ?? []
+    storage.set("limarestas_contact_requests", [
+      ...requests,
+      {
+        id: `CONTACT-${Date.now()}`,
+        name,
+        email,
+        phone: String(data.get("phone") ?? ""),
+        project: String(data.get("project") ?? ""),
+        message,
+        submittedAt: new Date().toISOString(),
+      },
+    ])
+    form.reset()
+    toast.success("Mensagem recebida", { description: "O envio foi registado e a equipa entrará em contacto consigo." })
+  }
 
   const texts = {
     pt: {
@@ -139,19 +170,19 @@ export function ContactSection() {
           </div>
 
           <div className="bg-card rounded-2xl border border-border p-8 shadow-lg">
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label htmlFor="name" className="text-sm font-medium text-foreground">
                     {txt.name}
                   </label>
-                  <Input id="name" placeholder={txt.namePlaceholder} className="bg-background" />
+                  <Input id="name" name="name" required autoComplete="name" placeholder={txt.namePlaceholder} className="bg-background" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium text-foreground">
                     {txt.email}
                   </label>
-                  <Input id="email" type="email" placeholder={txt.emailPlaceholder} className="bg-background" />
+                  <Input id="email" name="email" type="email" required autoComplete="email" placeholder={txt.emailPlaceholder} className="bg-background" />
                 </div>
               </div>
 

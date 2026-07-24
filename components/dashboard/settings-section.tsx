@@ -1,8 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { useActivityLog } from "@/hooks/use-activity-log"
+import { useTheme } from "@/components/theme-provider"
+import { storage } from "@/lib/storage"
+import { toast } from "sonner"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,7 +16,9 @@ import { User, Bell, Shield, Palette, Save, CheckCircle } from "lucide-react"
 export function SettingsSection() {
   const { user } = useAuth()
   const { addLog } = useActivityLog()
+  const { theme, setTheme } = useTheme()
   const [saved, setSaved] = useState(false)
+  const [passwords, setPasswords] = useState({ atual: "", nova: "", confirmar: "" })
   const [settings, setSettings] = useState({
     nome: user?.name || "",
     email: "",
@@ -21,12 +26,35 @@ export function SettingsSection() {
     notificacoesEmail: true,
     notificacoesSMS: false,
     notificacoesPush: true,
-    temaEscuro: false,
+    temaEscuro: theme === "dark",
   })
 
+  useEffect(() => {
+    const stored = storage.get<typeof settings>(`limarestas_settings_${user?.username ?? "guest"}`)
+    if (stored) setSettings({ ...stored, temaEscuro: theme === "dark" })
+  }, [theme, user?.username])
+
   const handleSave = () => {
+    if (!settings.nome.trim()) {
+      toast.error("Indique o nome completo")
+      return
+    }
+    if (settings.email && !/^\S+@\S+\.\S+$/.test(settings.email)) {
+      toast.error("Indique um email válido")
+      return
+    }
+    if (passwords.nova || passwords.confirmar || passwords.atual) {
+      if (!passwords.atual || passwords.nova.length < 8 || passwords.nova !== passwords.confirmar) {
+        toast.error("Confirme a palavra-passe", { description: "A nova palavra-passe deve ter pelo menos 8 caracteres e coincidir." })
+        return
+      }
+      setPasswords({ atual: "", nova: "", confirmar: "" })
+      toast.success("Palavra-passe atualizada nesta demonstração")
+    }
+    storage.set(`limarestas_settings_${user?.username ?? "guest"}`, settings)
     addLog("Atualização de Definições", "Definições de conta atualizadas", "usuario")
     setSaved(true)
+    toast.success("Definições guardadas")
     setTimeout(() => setSaved(false), 3000)
   }
 
@@ -154,7 +182,11 @@ export function SettingsSection() {
             </div>
             <Switch
               checked={settings.temaEscuro}
-              onCheckedChange={(checked) => setSettings({ ...settings, temaEscuro: checked })}
+              onCheckedChange={(checked) => {
+                setSettings({ ...settings, temaEscuro: checked })
+                setTheme(checked ? "dark" : "light")
+              }}
+              aria-label="Alternar tema escuro"
             />
           </div>
         </CardContent>
@@ -172,16 +204,34 @@ export function SettingsSection() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password-atual">Palavra-passe Atual</Label>
-            <Input id="password-atual" type="password" />
+            <Input
+              id="password-atual"
+              type="password"
+              autoComplete="current-password"
+              value={passwords.atual}
+              onChange={(event) => setPasswords({ ...passwords, atual: event.target.value })}
+            />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="password-nova">Nova Palavra-passe</Label>
-              <Input id="password-nova" type="password" />
+              <Input
+                id="password-nova"
+                type="password"
+                autoComplete="new-password"
+                value={passwords.nova}
+                onChange={(event) => setPasswords({ ...passwords, nova: event.target.value })}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password-confirmar">Confirmar Palavra-passe</Label>
-              <Input id="password-confirmar" type="password" />
+              <Input
+                id="password-confirmar"
+                type="password"
+                autoComplete="new-password"
+                value={passwords.confirmar}
+                onChange={(event) => setPasswords({ ...passwords, confirmar: event.target.value })}
+              />
             </div>
           </div>
         </CardContent>
